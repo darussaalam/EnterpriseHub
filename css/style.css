@@ -4,7 +4,7 @@
 
 :root {
     --bg-dark: #070c18;
-    --card-bg: rgba(15, 23, 42, 0.88);
+    --card-bg: rgba(15, 23, 42, 0.9);
     --card-border: rgba(255, 255, 255, 0.12);
     --neon-volt: #00f59b;
     --neon-cyan: #00e5ff;
@@ -48,24 +48,30 @@ body, html {
     z-index: 1;
 }
 
-/* UI Overlay Wrapper */
+/* Global Hidden Class */
+.hidden {
+    display: none !important;
+}
+
+/* UI Overlay Screen */
 .ui-screen {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 10;
+    z-index: 20;
     display: flex;
     flex-direction: column;
     pointer-events: auto;
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    background: transparent;
+    transition: opacity 0.2s ease;
 }
 
 .ui-screen.hidden {
-    opacity: 0;
-    pointer-events: none;
-    transform: scale(0.98);
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 /* Modal Popup */
@@ -75,8 +81,8 @@ body, html {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 50;
-    background: rgba(5, 10, 20, 0.78);
+    z-index: 100;
+    background: rgba(5, 10, 20, 0.82);
     backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
@@ -84,7 +90,7 @@ body, html {
 }
 
 .ui-modal.hidden {
-    display: none;
+    display: none !important;
 }
 
 /* ========================================================
@@ -100,6 +106,8 @@ body, html {
     flex-direction: column;
     justify-content: space-between;
     padding: 3rem 4rem;
+    pointer-events: auto;
+    z-index: 25;
 }
 
 .menu-header {
@@ -174,11 +182,12 @@ body, html {
     overflow: hidden;
     cursor: pointer;
     backdrop-filter: blur(16px);
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: auto;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .menu-tile-card:hover {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-6px) scale(1.02);
     border-color: var(--neon-volt);
     box-shadow: 0 20px 40px rgba(0, 245, 155, 0.22);
 }
@@ -219,6 +228,7 @@ body, html {
     background: #080e1a;
     display: flex;
     flex-direction: column;
+    pointer-events: auto;
 }
 
 .fm-topbar {
@@ -291,7 +301,7 @@ body, html {
 }
 
 .fm-tab-content.hidden {
-    display: none;
+    display: none !important;
 }
 
 .fm-card {
@@ -590,6 +600,7 @@ body, html {
     padding: 2.5rem 4rem;
     display: flex;
     flex-direction: column;
+    pointer-events: auto;
 }
 
 .screen-header-bar {
@@ -775,7 +786,7 @@ body, html {
     border-radius: 5px;
     overflow: hidden;
 }
-.hud-power-bar.hidden { display: none; }
+.hud-power-bar.hidden { display: none !important; }
 .hud-power-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #facc15, #ef4444); }
 
 .hud-radar-container {
@@ -796,7 +807,7 @@ body, html {
     text-align: center;
     animation: goalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.hud-goal-banner.hidden { display: none; }
+.hud-goal-banner.hidden { display: none !important; }
 .goal-giant-text {
     font-size: 6.5rem;
     font-weight: 900;
@@ -832,7 +843,7 @@ body, html {
     border-radius: 6px;
     letter-spacing: 2px;
 }
-.hud-replay-tag.hidden { display: none; }
+.hud-replay-tag.hidden { display: none !important; }
 
 /* Mobile Touch Controls */
 .touch-controls-container {
@@ -878,6 +889,7 @@ body, html {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 .touch-action-btn.btn-shoot { border-color: #ef4444; background: rgba(239, 68, 68, 0.25); }
 .touch-action-btn.btn-pass { border-color: var(--neon-volt); background: rgba(0, 245, 155, 0.25); }
@@ -896,6 +908,7 @@ body, html {
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    pointer-events: auto;
 }
 .summary-card {
     background: var(--card-bg);
@@ -905,6 +918,7 @@ body, html {
     width: 620px;
     max-width: 95%;
     text-align: center;
+    pointer-events: auto;
 }
 .summary-score { font-size: 2.2rem; font-weight: 900; margin: 1.5rem 0; color: var(--neon-volt); }
 .stats-table { width: 100%; margin: 1.5rem 0; display: flex; flex-direction: column; gap: 0.8rem; }

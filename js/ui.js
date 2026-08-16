@@ -62,7 +62,8 @@ export class UIManager {
                         <div class="team-meta">${team.league} • OVR <strong>${team.rating}</strong></div>
                     </div>
                 `;
-                card.addEventListener('click', () => {
+                card.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     if (isHome) {
                         this.selectedHomeTeam = team;
                     } else {
@@ -84,14 +85,14 @@ export class UIManager {
 
     renderTacticsRoster() {
         const rosterContainer = document.getElementById('tactics-roster');
-        if (!rosterContainer) return;
+        if (!rosterContainer || !this.selectedHomeTeam) return;
 
         rosterContainer.innerHTML = `
-            <div class="tactics-header">
+            <div class="tactics-header" style="margin-bottom: 1rem;">
                 <h3>${this.selectedHomeTeam.name} - Squad Rating (${this.selectedHomeTeam.rating})</h3>
-                <div class="formation-badge">${FORMATIONS[this.selectedFormation].name}</div>
+                <div class="formation-badge" style="color: var(--neon-volt);">${FORMATIONS[this.selectedFormation]?.name || '4-3-3 Attack'}</div>
             </div>
-            <div class="player-roster-grid">
+            <div class="player-roster-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1rem;">
                 ${this.selectedHomeTeam.players.map(p => `
                     <div class="player-fut-card">
                         <div class="card-ovr">${p.ovr}</div>
@@ -115,14 +116,13 @@ export class UIManager {
         const bracketEl = document.getElementById('tournament-bracket-view');
         if (!bracketEl) return;
 
-        // Generate 8-team knockout bracket
         const teams = [...TEAMS_DATABASE];
         this.tournamentBracket = [
             { round: 'Quarter-Finals', matches: [
-                { t1: teams[0], t2: teams[1], s1: 0, s2: 0, played: false },
-                { t1: teams[2], t2: teams[3], s1: 0, s2: 0, played: false },
-                { t1: teams[4], t2: teams[5], s1: 0, s2: 0, played: false },
-                { t1: teams[6], t2: teams[7], s1: 0, s2: 0, played: false }
+                { t1: teams[0] || { name: 'Team 1' }, t2: teams[1] || { name: 'Team 2' }, s1: 0, s2: 0, played: false },
+                { t1: teams[2] || { name: 'Team 3' }, t2: teams[3] || { name: 'Team 4' }, s1: 0, s2: 0, played: false },
+                { t1: teams[4] || { name: 'Team 5' }, t2: teams[5] || { name: 'Team 6' }, s1: 0, s2: 0, played: false },
+                { t1: teams[6] || { name: 'Team 7' }, t2: teams[7] || { name: 'Team 8' }, s1: 0, s2: 0, played: false }
             ]},
             { round: 'Semi-Finals', matches: [
                 { t1: { name: 'Winner QF 1' }, t2: { name: 'Winner QF 2' } },
@@ -149,27 +149,32 @@ export class UIManager {
 
     bindEvents() {
         // Main Menu Buttons
-        document.getElementById('btn-mode-kickoff')?.addEventListener('click', () => {
+        document.getElementById('btn-mode-kickoff')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             this.gameMode = 'kickoff';
             this.showScreen('screen-team-select');
         });
 
-        document.getElementById('btn-mode-tournament')?.addEventListener('click', () => {
+        document.getElementById('btn-mode-tournament')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             this.gameMode = 'tournament';
             this.renderTournamentBracket();
             this.showScreen('screen-tournament');
         });
 
-        document.getElementById('btn-mode-tactics')?.addEventListener('click', () => {
+        document.getElementById('btn-mode-tactics')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             this.showScreen('screen-tactics');
         });
 
-        document.getElementById('btn-mode-settings')?.addEventListener('click', () => {
+        document.getElementById('btn-mode-settings')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             this.showScreen('screen-settings');
         });
 
         // Team Select Next
-        document.getElementById('btn-start-match')?.addEventListener('click', () => {
+        document.getElementById('btn-start-match')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             soundEngine.init();
             this.showScreen('screen-hud');
             this.onStartMatch(this.selectedHomeTeam, this.selectedAwayTeam, this.selectedFormation, this.selectedDifficulty);
@@ -178,6 +183,7 @@ export class UIManager {
         // Formation Switcher
         document.querySelectorAll('.formation-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 document.querySelectorAll('.formation-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 this.selectedFormation = btn.dataset.formation;
@@ -188,7 +194,8 @@ export class UIManager {
 
         // Difficulty Switcher
         document.querySelectorAll('.diff-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 this.selectedDifficulty = btn.dataset.diff;
@@ -197,31 +204,37 @@ export class UIManager {
         });
 
         // Pause Menu Listeners
-        document.getElementById('btn-hud-pause')?.addEventListener('click', () => {
-            document.getElementById('modal-pause').classList.remove('hidden');
+        document.getElementById('btn-hud-pause')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('modal-pause')?.classList.remove('hidden');
         });
-        document.getElementById('btn-pause-resume')?.addEventListener('click', () => {
-            document.getElementById('modal-pause').classList.add('hidden');
+        document.getElementById('btn-pause-resume')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('modal-pause')?.classList.add('hidden');
             this.onResumeMatch();
         });
-        document.getElementById('btn-pause-restart')?.addEventListener('click', () => {
-            document.getElementById('modal-pause').classList.add('hidden');
+        document.getElementById('btn-pause-restart')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('modal-pause')?.classList.add('hidden');
             this.onRestartMatch();
         });
-        document.getElementById('btn-pause-quit')?.addEventListener('click', () => {
-            document.getElementById('modal-pause').classList.add('hidden');
+        document.getElementById('btn-pause-quit')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('modal-pause')?.classList.add('hidden');
             this.showScreen('screen-main-menu');
             this.onQuitToMenu();
         });
 
         // Fulltime summary back button
-        document.getElementById('btn-summary-continue')?.addEventListener('click', () => {
+        document.getElementById('btn-summary-continue')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             this.showScreen('screen-main-menu');
             this.onQuitToMenu();
         });
 
         // Audio mute toggle
         document.getElementById('btn-toggle-audio')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             const btn = e.currentTarget;
             const isMuted = btn.classList.toggle('muted');
             soundEngine.setMuted(isMuted);
@@ -230,7 +243,8 @@ export class UIManager {
 
         // Back to Menu buttons
         document.querySelectorAll('.btn-back-menu').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 this.showScreen('screen-main-menu');
             });
         });
@@ -249,8 +263,8 @@ export class UIManager {
         if (timeEl) timeEl.textContent = match.getFormattedTime();
         if (scoreHome) scoreHome.textContent = match.score.home;
         if (scoreAway) scoreAway.textContent = match.score.away;
-        if (nameHome) nameHome.textContent = match.homeTeamData.shortName;
-        if (nameAway) nameAway.textContent = match.awayTeamData.shortName;
+        if (nameHome) nameHome.textContent = match.homeTeamData?.shortName || 'HOM';
+        if (nameAway) nameAway.textContent = match.awayTeamData?.shortName || 'AWY';
 
         // Active Player Card Info
         if (activePlayer) {
@@ -305,11 +319,17 @@ export class UIManager {
 
         const poss = match.getPossessionPercentage();
 
-        document.getElementById('summary-score').textContent = `${match.homeTeamData.name} ${match.score.home} - ${match.score.away} ${match.awayTeamData.name}`;
-        document.getElementById('stat-poss').textContent = `${poss.home}% - ${poss.away}%`;
-        document.getElementById('stat-shots').textContent = `${match.stats.home.shots} - ${match.stats.away.shots}`;
-        document.getElementById('stat-shots-target').textContent = `${match.stats.home.shotsOnTarget} - ${match.stats.away.shotsOnTarget}`;
-        document.getElementById('stat-tackles').textContent = `${match.stats.home.tackles} - ${match.stats.away.tackles}`;
+        const scoreEl = document.getElementById('summary-score');
+        const possEl = document.getElementById('stat-poss');
+        const shotsEl = document.getElementById('stat-shots');
+        const targetEl = document.getElementById('stat-shots-target');
+        const tacklesEl = document.getElementById('stat-tackles');
+
+        if (scoreEl) scoreEl.textContent = `${match.homeTeamData?.name || 'Home'} ${match.score.home} - ${match.score.away} ${match.awayTeamData?.name || 'Away'}`;
+        if (possEl) possEl.textContent = `${poss.home}% - ${poss.away}%`;
+        if (shotsEl) shotsEl.textContent = `${match.stats.home.shots} - ${match.stats.away.shots}`;
+        if (targetEl) targetEl.textContent = `${match.stats.home.shotsOnTarget} - ${match.stats.away.shotsOnTarget}`;
+        if (tacklesEl) tacklesEl.textContent = `${match.stats.home.tackles} - ${match.stats.away.tackles}`;
 
         this.showScreen('screen-match-summary');
     }
@@ -337,13 +357,13 @@ export class UIManager {
         ctx.arc(w / 2, h / 2, 16, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Coordinate mapping function (-52.5 to 52.5 on X -> 4 to w-4; -34 to 34 on Z -> 4 to h-4)
+        // Coordinate mapping function
         const mapX = (x) => 4 + ((x + 52.5) / 105) * (w - 8);
         const mapZ = (z) => 4 + ((z + 34) / 68) * (h - 8);
 
-        // Draw Home Players (Volt / Cyan Dots)
+        // Draw Home Players
         ctx.fillStyle = '#00f59b';
-        teamHome.forEach((p, idx) => {
+        teamHome.forEach((p) => {
             const rx = mapX(p.position.x);
             const rz = mapZ(p.position.z);
             ctx.beginPath();
@@ -351,7 +371,7 @@ export class UIManager {
             ctx.fill();
         });
 
-        // Draw Away Players (Red / White Dots)
+        // Draw Away Players
         ctx.fillStyle = '#ef4444';
         teamAway.forEach(p => {
             const rx = mapX(p.position.x);
@@ -361,7 +381,7 @@ export class UIManager {
             ctx.fill();
         });
 
-        // Draw Ball (Bright Yellow Dot)
+        // Draw Ball
         if (ball) {
             const bx = mapX(ball.position.x);
             const bz = mapZ(ball.position.z);

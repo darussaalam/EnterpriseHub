@@ -39,12 +39,21 @@ export class FMUIManager {
 
     renderDashboardSummary() {
         const club = fmEngine.userClub;
-        document.getElementById('fm-club-name').textContent = club.name;
-        document.getElementById('fm-club-badge').textContent = club.logo;
-        document.getElementById('fm-budget-display').textContent = `€${(club.transferBudget / 1000000).toFixed(1)}M`;
-        document.getElementById('fm-matchday-display').textContent = `Pekan ke-${fmEngine.currentMatchday}`;
-        document.getElementById('fm-board-conf').textContent = `${fmEngine.boardConfidence}%`;
-        document.getElementById('fm-fan-conf').textContent = `${fmEngine.fanConfidence}%`;
+        if (!club) return;
+
+        const nameEl = document.getElementById('fm-club-name');
+        const badgeEl = document.getElementById('fm-club-badge');
+        const budgetEl = document.getElementById('fm-budget-display');
+        const matchdayEl = document.getElementById('fm-matchday-display');
+        const boardEl = document.getElementById('fm-board-conf');
+        const fanEl = document.getElementById('fm-fan-conf');
+
+        if (nameEl) nameEl.textContent = club.name;
+        if (badgeEl) badgeEl.textContent = club.logo;
+        if (budgetEl) budgetEl.textContent = `€${(club.transferBudget / 1000000).toFixed(1)}M`;
+        if (matchdayEl) matchdayEl.textContent = `Pekan ke-${fmEngine.currentMatchday}`;
+        if (boardEl) boardEl.textContent = `${fmEngine.boardConfidence}%`;
+        if (fanEl) fanEl.textContent = `${fmEngine.fanConfidence}%`;
 
         // Next Match Preview
         const nextMatchInfo = fmEngine.getCurrentUserMatch();
@@ -53,11 +62,11 @@ export class FMUIManager {
             const opp = nextMatchInfo.isUserHome ? nextMatchInfo.awayClub : nextMatchInfo.homeClub;
             const venue = nextMatchInfo.isUserHome ? 'KANDANG (HOME)' : 'TANDANG (AWAY)';
             nextMatchEl.innerHTML = `
-                <div class="next-match-badge">${opp.logo}</div>
+                <div class="next-match-badge">${opp?.logo || '⚽'}</div>
                 <div class="next-match-details">
                     <div class="venue-tag">${venue}</div>
-                    <h4>vs ${opp.name}</h4>
-                    <p>Rating Skuad: <strong>${opp.rating}</strong> • Taktik: ${opp.tacticalStyle || 'Standard'}</p>
+                    <h4>vs ${opp?.name || 'Opponent'}</h4>
+                    <p>Rating Skuad: <strong>${opp?.rating || 80}</strong> • Taktik: ${opp?.tacticalStyle || 'Standard'}</p>
                 </div>
             `;
         }
@@ -69,7 +78,7 @@ export class FMUIManager {
 
         fmEngine.sortStandings();
         tableBody.innerHTML = fmEngine.standings.map((team, idx) => {
-            const isUser = team.id === fmEngine.userClub.id;
+            const isUser = team.id === fmEngine.userClub?.id;
             return `
                 <tr class="${isUser ? 'user-club-row' : ''}">
                     <td><strong>${idx + 1}</strong></td>
@@ -86,7 +95,7 @@ export class FMUIManager {
                     <td class="pts-cell"><strong>${team.points}</strong></td>
                     <td>
                         <div class="form-badges">
-                            ${team.form.map(f => `<span class="form-pill ${f}">${f}</span>`).join('')}
+                            ${(team.form || []).map(f => `<span class="form-pill ${f}">${f}</span>`).join('')}
                         </div>
                     </td>
                 </tr>
@@ -96,7 +105,7 @@ export class FMUIManager {
 
     renderSquadList() {
         const squadGrid = document.getElementById('fm-squad-table-body');
-        if (!squadGrid) return;
+        if (!squadGrid || !fmEngine.userClub) return;
 
         squadGrid.innerHTML = fmEngine.userClub.players.map(p => `
             <tr>
@@ -126,7 +135,7 @@ export class FMUIManager {
 
     renderTransferMarket() {
         const marketList = document.getElementById('fm-market-list');
-        if (!marketList) return;
+        if (!marketList || !fmEngine.userClub) return;
 
         // Collect all global players excluding user club players
         const userPIds = new Set(fmEngine.userClub.players.map(p => p.id));
@@ -179,11 +188,17 @@ export class FMUIManager {
         const modal = document.getElementById('modal-fm-transfer');
         if (!modal) return;
 
-        document.getElementById('nego-player-name').textContent = player.name;
-        document.getElementById('nego-player-meta').textContent = `${player.role} • ${player.ovr} OVR • Usia ${player.age} • ${player.clubName}`;
-        document.getElementById('nego-market-val').textContent = `€${(player.val / 1000000).toFixed(1)}M`;
-        document.getElementById('nego-fee-input').value = player.val;
-        document.getElementById('nego-wage-input').value = player.wage || 100000;
+        const nameEl = document.getElementById('nego-player-name');
+        const metaEl = document.getElementById('nego-player-meta');
+        const valEl = document.getElementById('nego-market-val');
+        const feeInput = document.getElementById('nego-fee-input');
+        const wageInput = document.getElementById('nego-wage-input');
+
+        if (nameEl) nameEl.textContent = player.name;
+        if (metaEl) metaEl.textContent = `${player.role} • ${player.ovr} OVR • Usia ${player.age} • ${player.clubName}`;
+        if (valEl) valEl.textContent = `€${(player.val / 1000000).toFixed(1)}M`;
+        if (feeInput) feeInput.value = player.val;
+        if (wageInput) wageInput.value = player.wage || 100000;
 
         modal.classList.remove('hidden');
     }
@@ -192,7 +207,7 @@ export class FMUIManager {
         const inboxList = document.getElementById('fm-inbox-list');
         if (!inboxList) return;
 
-        inboxList.innerHTML = fmEngine.inbox.map(item => `
+        inboxList.innerHTML = (fmEngine.inbox || []).map(item => `
             <div class="inbox-item-card">
                 <div class="inbox-meta">
                     <span class="inbox-sender">${item.sender}</span>
@@ -205,15 +220,20 @@ export class FMUIManager {
     }
 
     renderTacticsScreen() {
-        const t = fmEngine.tactics;
-        document.getElementById('tactics-style-select').value = t.style || 'Gegenpress';
-        document.getElementById('tactics-mentality-select').value = t.mentality || 'Attacking';
-        document.getElementById('tactics-tempo-select').value = t.tempo || 'High';
+        const t = fmEngine.tactics || {};
+        const styleEl = document.getElementById('tactics-style-select');
+        const mentEl = document.getElementById('tactics-mentality-select');
+        const tempoEl = document.getElementById('tactics-tempo-select');
+
+        if (styleEl) styleEl.value = t.style || 'Gegenpress';
+        if (mentEl) mentEl.value = t.mentality || 'Attacking';
+        if (tempoEl) tempoEl.value = t.tempo || 'High';
     }
 
     bindEvents() {
         // Mode Selector from Main Menu
-        document.getElementById('btn-mode-fm-career')?.addEventListener('click', () => {
+        document.getElementById('btn-mode-fm-career')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             if (fmEngine.hasSavedCareer() && fmEngine.loadCareer()) {
                 this.openCareerDashboard();
             } else {
@@ -225,6 +245,7 @@ export class FMUIManager {
         // Tab Navigation within FM Dashboard
         document.querySelectorAll('.fm-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 document.querySelectorAll('.fm-tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.fm-tab-content').forEach(c => c.classList.add('hidden'));
 
@@ -236,16 +257,17 @@ export class FMUIManager {
         });
 
         // Transfer Negotiation Modal Actions
-        document.getElementById('btn-nego-submit')?.addEventListener('click', () => {
+        document.getElementById('btn-nego-submit')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             if (!this.selectedMarketPlayer) return;
-            const fee = parseFloat(document.getElementById('nego-fee-input').value);
-            const wage = parseFloat(document.getElementById('nego-wage-input').value);
+            const fee = parseFloat(document.getElementById('nego-fee-input')?.value || 0);
+            const wage = parseFloat(document.getElementById('nego-wage-input')?.value || 0);
 
             const result = fmEngine.buyPlayer(this.selectedMarketPlayer, fee, wage);
             alert(result.message);
 
             if (result.success) {
-                document.getElementById('modal-fm-transfer').classList.add('hidden');
+                document.getElementById('modal-fm-transfer')?.classList.add('hidden');
                 this.renderDashboardSummary();
                 this.renderSquadList();
                 this.renderTransferMarket();
@@ -253,28 +275,32 @@ export class FMUIManager {
             }
         });
 
-        document.getElementById('btn-nego-cancel')?.addEventListener('click', () => {
-            document.getElementById('modal-fm-transfer').classList.add('hidden');
+        document.getElementById('btn-nego-cancel')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('modal-fm-transfer')?.classList.add('hidden');
         });
 
         // Tactics save changes
-        document.getElementById('btn-save-tactics')?.addEventListener('click', () => {
-            fmEngine.tactics.style = document.getElementById('tactics-style-select').value;
-            fmEngine.tactics.mentality = document.getElementById('tactics-mentality-select').value;
-            fmEngine.tactics.tempo = document.getElementById('tactics-tempo-select').value;
+        document.getElementById('btn-save-tactics')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fmEngine.tactics.style = document.getElementById('tactics-style-select')?.value || 'Gegenpress';
+            fmEngine.tactics.mentality = document.getElementById('tactics-mentality-select')?.value || 'Attacking';
+            fmEngine.tactics.tempo = document.getElementById('tactics-tempo-select')?.value || 'High';
             fmEngine.saveCareer();
             alert('Taktik berhasil disimpan dan diterapkan ke skuad!');
         });
 
         // Matchday: Quick Sim
-        document.getElementById('btn-fm-quick-sim')?.addEventListener('click', () => {
+        document.getElementById('btn-fm-quick-sim')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             fmEngine.simulateMatchday();
             alert(`Pekan ke-${fmEngine.currentMatchday - 1} selesai disimulasikan!`);
             this.openCareerDashboard();
         });
 
         // Matchday: Play in 3D EA FC Engine
-        document.getElementById('btn-fm-play-3d')?.addEventListener('click', () => {
+        document.getElementById('btn-fm-play-3d')?.addEventListener('click', (e) => {
+            e.stopPropagation();
             const nextMatch = fmEngine.getCurrentUserMatch();
             if (!nextMatch) {
                 alert('Musim telah berakhir!');
@@ -316,7 +342,8 @@ export class FMUIManager {
         `).join('');
 
         clubGrid.querySelectorAll('.career-pick-card').forEach(card => {
-            card.addEventListener('click', () => {
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const cid = card.dataset.clubId;
                 fmEngine.startNewCareer(cid);
                 this.openCareerDashboard();
