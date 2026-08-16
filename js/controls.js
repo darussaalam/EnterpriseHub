@@ -1,6 +1,6 @@
 /**
  * EA FC 27 Web Edition - Multi-Input Controller System
- * Keyboard, Gamepad API, and Mobile Virtual Touch Joystick
+ * Ultra-Responsive Keyboard, Gamepad API (Xbox / PS / Generic), and Mobile Touch Joystick
  */
 
 export class ControlsManager {
@@ -15,8 +15,9 @@ export class ControlsManager {
         this.lobCharging = false;
         this.lobPower = 0;
 
-        // Gamepad state
+        // Gamepad tracking
         this.gamepadIndex = null;
+        this.gpButtonsPrev = {};
 
         // Virtual Touch Joystick
         this.touchJoystick = {
@@ -49,7 +50,7 @@ export class ControlsManager {
 
         // 2. Gamepad API Listeners
         window.addEventListener('gamepadconnected', (e) => {
-            console.log('🎮 Gamepad connected:', e.gamepad.id);
+            console.log('🎮 Gamepad connected:', e.gamepad.id, 'Index:', e.gamepad.index);
             this.gamepadIndex = e.gamepad.index;
         });
         window.addEventListener('gamepaddisconnected', (e) => {
@@ -60,65 +61,83 @@ export class ControlsManager {
         this.initTouchControls();
     }
 
+    isShootKey(code) {
+        return code === 'KeyK' || code === 'KeyC' || code === 'KeyF' || code === 'Numpad3' || code === 'Numpad0';
+    }
+
+    isPassKey(code) {
+        return code === 'KeyJ' || code === 'KeyX' || code === 'Numpad1';
+    }
+
+    isThroughKey(code) {
+        return code === 'KeyI' || code === 'KeyV' || code === 'Numpad4';
+    }
+
+    isLobKey(code) {
+        return code === 'KeyL' || code === 'KeyZ' || code === 'Numpad2';
+    }
+
     onKeyDown(e) {
         if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
-            e.preventDefault(); // prevent window scrolling
+            e.preventDefault();
         }
 
         this.keys[e.code] = true;
 
-        // Shoot charging start (D / K)
-        if ((e.code === 'KeyD' || e.code === 'KeyK') && !this.shootCharging) {
+        // Shoot Charging Start
+        if (this.isShootKey(e.code) && !this.shootCharging) {
             this.shootCharging = true;
-            this.shootPower = 0;
+            this.shootPower = 0.25; // initial tap power
         }
 
-        // Lob pass charging start (A / L)
-        if ((e.code === 'KeyA' || e.code === 'KeyL') && !this.lobCharging) {
+        // Lob Charging Start
+        if (this.isLobKey(e.code) && !this.lobCharging) {
             this.lobCharging = true;
-            this.lobPower = 0;
+            this.lobPower = 0.3;
         }
     }
 
     onKeyUp(e) {
         this.keys[e.code] = false;
 
-        // Ground Pass (X / J)
-        if (e.code === 'KeyX' || e.code === 'KeyJ') {
+        // Ground Pass
+        if (this.isPassKey(e.code)) {
             this.callbacks.onPass();
         }
 
-        // Through Ball (W / I)
-        if (e.code === 'KeyW' || e.code === 'KeyI') {
+        // Through Ball
+        if (this.isThroughKey(e.code)) {
             this.callbacks.onThroughBall();
         }
 
-        // Shoot Release (D / K)
-        if ((e.code === 'KeyD' || e.code === 'KeyK') && this.shootCharging) {
+        // Shoot Release
+        if (this.isShootKey(e.code)) {
+            const finalPower = Math.max(0.35, this.shootPower);
             this.shootCharging = false;
-            this.callbacks.onShoot(Math.max(0.2, this.shootPower));
             this.shootPower = 0;
+            this.callbacks.onShoot(finalPower);
         }
 
-        // Lob Pass Release (A / L)
-        if ((e.code === 'KeyA' || e.code === 'KeyL') && this.lobCharging) {
+        // Lob Pass Release
+        if (this.isLobKey(e.code)) {
+            const finalPower = Math.max(0.4, this.lobPower);
             this.lobCharging = false;
-            this.callbacks.onLobPass(Math.max(0.3, this.lobPower));
             this.lobPower = 0;
+            this.callbacks.onLobPass(finalPower);
         }
 
-        // Standing / Slide Tackle (C / Semicolon)
-        if (e.code === 'KeyC' || e.code === 'Semicolon') {
+        // Standing / Slide Tackle
+        if (e.code === 'KeyE' || e.code === 'Semicolon') {
             this.callbacks.onTackle();
         }
 
-        // Switch Player (Q / U)
+        // Switch Player
         if (e.code === 'KeyQ' || e.code === 'KeyU') {
             this.callbacks.onSwitchPlayer();
         }
 
-        // Skill Move (E / O)
-        if (e.code === 'KeyE' || e.code === 'KeyO') {
+        // Skill Move
+        if (e.code === 'KeyR' || e.code === 'KeyO') {
             this.callbacks.onSkillMove();
         }
     }
@@ -146,7 +165,7 @@ export class ControlsManager {
                 const dy = touch.clientY - this.touchJoystick.originY;
                 const dist = Math.hypot(dx, dy);
 
-                if (dist < 120) {
+                if (dist < 140) {
                     const clampedDist = Math.min(maxRadius, dist);
                     const angle = Math.atan2(dy, dx);
                     const thumbX = Math.cos(angle) * clampedDist;
@@ -187,23 +206,21 @@ export class ControlsManager {
         bindBtn('btn-touch-pass', null, () => this.callbacks.onPass());
         bindBtn('btn-touch-through', null, () => this.callbacks.onThroughBall());
         bindBtn('btn-touch-shoot', 
-            () => { this.shootCharging = true; this.shootPower = 0; },
+            () => { this.shootCharging = true; this.shootPower = 0.3; },
             () => {
-                if (this.shootCharging) {
-                    this.shootCharging = false;
-                    this.callbacks.onShoot(Math.max(0.2, this.shootPower));
-                    this.shootPower = 0;
-                }
+                const finalPower = Math.max(0.35, this.shootPower);
+                this.shootCharging = false;
+                this.shootPower = 0;
+                this.callbacks.onShoot(finalPower);
             }
         );
         bindBtn('btn-touch-lob', 
-            () => { this.lobCharging = true; this.lobPower = 0; },
+            () => { this.lobCharging = true; this.lobPower = 0.3; },
             () => {
-                if (this.lobCharging) {
-                    this.lobCharging = false;
-                    this.callbacks.onLobPass(Math.max(0.3, this.lobPower));
-                    this.lobPower = 0;
-                }
+                const finalPower = Math.max(0.4, this.lobPower);
+                this.lobCharging = false;
+                this.lobPower = 0;
+                this.callbacks.onLobPass(finalPower);
             }
         );
         bindBtn('btn-touch-tackle', null, () => this.callbacks.onTackle());
@@ -212,71 +229,85 @@ export class ControlsManager {
     }
 
     pollGamepad() {
-        if (this.gamepadIndex === null) return;
         const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-        const gp = gamepads[this.gamepadIndex];
+        let gp = null;
+
+        // Auto-detect connected gamepad
+        if (this.gamepadIndex !== null && gamepads[this.gamepadIndex]) {
+            gp = gamepads[this.gamepadIndex];
+        } else {
+            for (let i = 0; i < gamepads.length; i++) {
+                if (gamepads[i]) {
+                    gp = gamepads[i];
+                    this.gamepadIndex = i;
+                    break;
+                }
+            }
+        }
+
         if (!gp) return;
 
-        // Left Analog Stick for Movement
-        const axisX = gp.axes[0] || 0;
-        const axisY = gp.axes[1] || 0;
-        const deadzone = 0.18;
+        // 1. Left Analog Stick & D-Pad for Movement
+        let stickX = gp.axes[0] || 0;
+        let stickY = gp.axes[1] || 0;
+        const deadzone = 0.15;
 
-        if (Math.hypot(axisX, axisY) > deadzone) {
-            this.moveVector.x = axisX;
-            this.moveVector.z = axisY;
+        // D-Pad override (Buttons 12=Up, 13=Down, 14=Left, 15=Right)
+        if (gp.buttons[14]?.pressed) stickX = -1;
+        if (gp.buttons[15]?.pressed) stickX = 1;
+        if (gp.buttons[12]?.pressed) stickY = -1;
+        if (gp.buttons[13]?.pressed) stickY = 1;
+
+        if (Math.hypot(stickX, stickY) > deadzone) {
+            this.moveVector.x = stickX;
+            this.moveVector.z = stickY;
         }
 
-        // Sprint button (RT / R2 or RB / R1)
-        this.isSprinting = gp.buttons[7]?.pressed || gp.buttons[5]?.pressed || this.isSprinting;
+        // 2. Sprint button (RT / R2: Button 7, RB / R1: Button 5, LT / L2: Button 6)
+        if (gp.buttons[7]?.pressed || gp.buttons[5]?.pressed || (gp.buttons[7]?.value > 0.3)) {
+            this.isSprinting = true;
+        }
 
-        // Button A / Cross: Pass
-        if (gp.buttons[0]?.pressed && !this.gpButtonAState) {
+        // Helper for button down edge
+        const btnPressed = (idx) => gp.buttons[idx]?.pressed || (gp.buttons[idx]?.value > 0.5);
+
+        // 3. Button A / Cross (Button 0): Ground Pass
+        if (btnPressed(0) && !this.gpButtonsPrev[0]) {
             this.callbacks.onPass();
         }
-        this.gpButtonAState = gp.buttons[0]?.pressed;
+        this.gpButtonsPrev[0] = btnPressed(0);
 
-        // Button B / Circle: Shoot
-        if (gp.buttons[1]?.pressed) {
+        // 4. Button B / Circle (Button 1) OR Button X (Button 2): Shoot
+        const isShootingPressed = btnPressed(1) || (btnPressed(2) && !this.isLobKeyActive);
+        if (isShootingPressed) {
             if (!this.shootCharging) {
                 this.shootCharging = true;
-                this.shootPower = 0;
+                this.shootPower = 0.3; // initial burst
             }
-        } else if (this.shootCharging) {
+        } else if (this.shootCharging && !this.isKeyboardShooting) {
+            const finalPower = Math.max(0.4, this.shootPower);
             this.shootCharging = false;
-            this.callbacks.onShoot(Math.max(0.2, this.shootPower));
             this.shootPower = 0;
+            this.callbacks.onShoot(finalPower);
         }
 
-        // Button Y / Triangle: Through Ball
-        if (gp.buttons[3]?.pressed && !this.gpButtonYState) {
+        // 5. Button Y / Triangle (Button 3): Through Ball
+        if (btnPressed(3) && !this.gpButtonsPrev[3]) {
             this.callbacks.onThroughBall();
         }
-        this.gpButtonYState = gp.buttons[3]?.pressed;
+        this.gpButtonsPrev[3] = btnPressed(3);
 
-        // Button X / Square: Lob / Tackle
-        if (gp.buttons[2]?.pressed) {
-            if (!this.lobCharging) {
-                this.lobCharging = true;
-                this.lobPower = 0;
-            }
-        } else if (this.lobCharging) {
-            this.lobCharging = false;
-            this.callbacks.onLobPass(Math.max(0.3, this.lobPower));
-            this.lobPower = 0;
-        }
-
-        // LB / L1: Switch player
-        if (gp.buttons[4]?.pressed && !this.gpButtonLBState) {
+        // 6. LB / L1 (Button 4): Switch Player
+        if (btnPressed(4) && !this.gpButtonsPrev[4]) {
             this.callbacks.onSwitchPlayer();
         }
-        this.gpButtonLBState = gp.buttons[4]?.pressed;
+        this.gpButtonsPrev[4] = btnPressed(4);
 
-        // RS Click: Skill Move
-        if (gp.buttons[11]?.pressed && !this.gpButtonRSState) {
+        // 7. RS Click (Button 11) or LT (Button 6): Skill Move
+        if ((btnPressed(11) || btnPressed(6)) && !this.gpButtonsPrev[11]) {
             this.callbacks.onSkillMove();
         }
-        this.gpButtonRSState = gp.buttons[11]?.pressed;
+        this.gpButtonsPrev[11] = btnPressed(11) || btnPressed(6);
     }
 
     update(dt) {
@@ -312,10 +343,10 @@ export class ControlsManager {
 
         // Charge power meters
         if (this.shootCharging) {
-            this.shootPower = Math.min(1.0, this.shootPower + dt * 1.6);
+            this.shootPower = Math.min(1.0, this.shootPower + dt * 2.0);
         }
         if (this.lobCharging) {
-            this.lobPower = Math.min(1.0, this.lobPower + dt * 1.5);
+            this.lobPower = Math.min(1.0, this.lobPower + dt * 1.8);
         }
     }
 }

@@ -1,92 +1,80 @@
 /**
- * EA FC 27 x FM 27 Web Edition - Main Game Application Bootstrap & Loop
+ * EA SPORTS FC 27 x FOOTBALL MANAGER 27 - Master Game Application Engine
  */
 
-import { GAME_CONFIG, FORMATIONS } from './config.js';
-import { GLOBAL_CLUBS } from './database.js';
+import { GAME_CONFIG, FORMATIONS, TEAMS_DATABASE } from './config.js';
 import { Engine3D } from './engine3d.js';
 import { Ball } from './physics.js';
 import { Player } from './player.js';
-import { AIEngine } from './ai.js';
 import { ControlsManager } from './controls.js';
+import { AIAssistant } from './ai.js';
 import { Match } from './match.js';
+import { soundEngine } from './audio.js';
 import { UIManager } from './ui.js';
 import { FMUIManager } from './ui_fm.js';
 import { fmEngine } from './fm_manager.js';
-import { soundEngine } from './audio.js';
 
-class GameApp {
+export class GameApp {
     constructor() {
         this.container = document.getElementById('game-container');
-        this.engine3D = null;
-        this.ball = null;
+        this.engine3D = new Engine3D(this.container);
+        this.controls = new ControlsManager();
+        this.ai = new AIAssistant();
+        this.ui = new UIManager();
+        this.fmUI = new FMUIManager(this);
+
+        this.ball = new Ball(this.engine3D.scene);
         this.teamHome = [];
         this.teamAway = [];
-        this.activePlayerIndex = 9; // Default: user controls primary attacker
         this.humanPlayer = null;
-
-        this.controls = null;
-        this.ai = null;
+        this.activePlayerIndex = 0;
         this.match = null;
-        this.ui = null;
-        this.fmUI = null;
 
-        this.lastTime = 0;
         this.isMatchRunning = false;
+        this.lastTime = 0;
 
         this.init();
     }
 
     init() {
-        // 1. Initialize 3D Scene
-        this.engine3D = new Engine3D(this.container);
-
-        // 2. Initialize Ball
-        this.ball = new Ball(this.engine3D.scene);
-
-        // 3. Initialize AI & Controls & UI
-        this.ai = new AIEngine('MEDIUM');
-        this.controls = new ControlsManager();
-        this.ui = new UIManager();
-        this.fmUI = new FMUIManager(this);
-
-        // 4. Bind Control Callbacks
+        this.bindUIActions();
         this.bindControlActions();
 
-        // 5. Bind UI Lifecycle Events
+        // Start render loop
+        requestAnimationFrame((t) => this.gameLoop(t));
+    }
+
+    bindUIActions() {
         this.ui.onStartMatch = (homeTeam, awayTeam, formation, difficulty) => {
             this.startNewMatch(homeTeam, awayTeam, formation, difficulty);
         };
 
         this.ui.onRestartMatch = () => {
             if (this.match) {
-                this.startNewMatch(this.match.homeTeamData, this.match.awayTeamData, this.ui.selectedFormation, this.ui.selectedDifficulty);
+                this.startNewMatch(
+                    this.match.homeTeamData,
+                    this.match.awayTeamData,
+                    '4-3-3',
+                    this.ai.difficulty
+                );
             }
         };
 
         this.ui.onResumeMatch = () => {
-            if (this.match && this.match.state !== 'FULL_TIME') {
-                this.match.state = 'PLAYING';
-            }
+            if (this.match) this.match.isPaused = false;
         };
 
         this.ui.onQuitToMenu = () => {
             this.isMatchRunning = false;
             this.clearTeamEntities();
-            this.ball.reset(0, 0);
-            if (fmEngine.userClub) {
-                this.fmUI.openCareerDashboard();
-            }
+            this.engine3D.setBroadcastCamera();
         };
-
-        // 6. Start Master Animation Loop
-        requestAnimationFrame((t) => this.gameLoop(t));
     }
 
-    startNewMatch(homeData, awayData, formationKey, diffKey) {
+    startNewMatch(homeData, awayData, formationKey = '4-3-3', difficulty = 'MEDIUM') {
         this.clearTeamEntities();
 
-        this.ai.setDifficulty(diffKey);
+        this.ai.setDifficulty(difficulty);
         this.match = new Match(homeData, awayData);
 
         const form = FORMATIONS[formationKey] || FORMATIONS['4-3-3'];
@@ -104,12 +92,12 @@ class GameApp {
             return new Player(this.engine3D.scene, awayData, pData, false, mirroredPos);
         });
 
-        // Assign User Controller to Striker
-        this.activePlayerIndex = Math.min(9, this.teamHome.length - 1);
+        // Assign User Controller to Center Forward / Striker
+        this.activePlayerIndex = Math.min(10, this.teamHome.length - 1);
         this.humanPlayer = this.teamHome[this.activePlayerIndex] || this.teamHome[0];
         this.updateActivePlayer();
 
-        // Position Ball at Center Spot
+        // Position Ball at Center Spot and give possession
         this.ball.reset(0, 0);
         this.ball.owner = this.humanPlayer;
 
@@ -138,7 +126,7 @@ class GameApp {
         let minDist = 999;
 
         this.teamHome.forEach((p, idx) => {
-            if (idx === 0) return; // don't switch to GK automatically
+            if (idx === 0) return; // don't auto switch to goalkeeper
             const d = p.position.distanceTo(this.ball.position);
             if (d < minDist) {
                 minDist = d;
@@ -153,12 +141,18 @@ class GameApp {
         }
     }
 
-    bindControlActions() {
-        // Ground Pass
-        this.controls.callbacks.onPass = () => {
-            if (!this.humanPlayer || this.ball.owner !== this.humanPlayer) return;
+    canPlayerKick() {
+        if (!this.humanPlayer) return false;
+        if (this.ball.owner === this.humanPlayer) return true;
+        const dist = this.humanPlayer.position.distanceTo(this.ball.position);
+        return dist < 2.5 && this.ball.position.y < 2.0;
+    }
 
-            // Find best teammate in facing direction
+    bindControlActions() {
+        // 1. Ground Pass
+        this.controls.callbacks.onPass = () => {
+            if (!this.canPlayerKick()) return;
+
             const forward = new THREE.Vector3(Math.sin(this.humanPlayer.rotation), 0, Math.cos(this.humanPlayer.rotation));
             let bestTarget = null;
             let highestDot = -1;
@@ -167,7 +161,7 @@ class GameApp {
                 if (teammate === this.humanPlayer) return;
                 const toMate = new THREE.Vector3().subVectors(teammate.position, this.humanPlayer.position);
                 const dist = toMate.length();
-                if (dist > 3 && dist < 32) {
+                if (dist > 3 && dist < 36) {
                     const dot = forward.dot(toMate.normalize());
                     if (dot > highestDot) {
                         highestDot = dot;
@@ -180,55 +174,49 @@ class GameApp {
                 new THREE.Vector3().subVectors(bestTarget.position, this.humanPlayer.position).normalize() :
                 forward;
 
-            const power = bestTarget ? 14 + this.humanPlayer.position.distanceTo(bestTarget.position) * 0.45 : 18;
+            const power = bestTarget ? 15 + this.humanPlayer.position.distanceTo(bestTarget.position) * 0.45 : 18;
 
             this.humanPlayer.triggerKick();
             this.ball.kick(passDir, power, 0.05, 0, this.humanPlayer);
             if (this.match) this.match.stats.home.passes++;
 
-            // Auto-switch to pass receiver
             if (bestTarget) {
                 setTimeout(() => {
                     this.humanPlayer = bestTarget;
                     this.activePlayerIndex = this.teamHome.indexOf(bestTarget);
                     this.updateActivePlayer();
-                }, 220);
+                }, 200);
             }
         };
 
-        // Through Ball
+        // 2. Through Ball
         this.controls.callbacks.onThroughBall = () => {
-            if (!this.humanPlayer || this.ball.owner !== this.humanPlayer) return;
+            if (!this.canPlayerKick()) return;
 
             const forward = new THREE.Vector3(Math.sin(this.humanPlayer.rotation), 0, Math.cos(this.humanPlayer.rotation));
-            const throughTarget = new THREE.Vector3(
-                this.humanPlayer.position.x + forward.x * 20,
-                0,
-                this.humanPlayer.position.z + forward.z * 20
-            );
-
-            const passDir = forward;
             this.humanPlayer.triggerKick();
-            this.ball.kick(passDir, 22, 0.08, 0, this.humanPlayer);
+            this.ball.kick(forward, 24, 0.08, 0, this.humanPlayer);
             if (this.match) this.match.stats.home.passes++;
 
-            // Switch to player running onto through ball
-            setTimeout(() => this.switchActivePlayerToClosest(), 300);
+            setTimeout(() => this.switchActivePlayerToClosest(), 250);
         };
 
-        // Shooting with Power Meter & Precision Aim
+        // 3. Shooting (Ultra-Responsive with Aim and Curve)
         this.controls.callbacks.onShoot = (powerRatio) => {
-            if (!this.humanPlayer || this.ball.owner !== this.humanPlayer) return;
+            if (!this.canPlayerKick()) return;
 
             const goalPos = new THREE.Vector3(GAME_CONFIG.PITCH_LENGTH / 2, 0, 0);
             const toGoal = new THREE.Vector3().subVectors(goalPos, this.humanPlayer.position).normalize();
             
-            // Aim slightly towards corner posts based on lateral movement
-            toGoal.z += this.controls.moveVector.z * 0.25;
-            toGoal.normalize();
+            // Aim with joystick / movement direction
+            if (this.controls.moveVector.z !== 0) {
+                toGoal.z += this.controls.moveVector.z * 0.35;
+                toGoal.normalize();
+            }
 
-            const shootPower = 18 + powerRatio * 22; // 18m/s to 40m/s
-            const heightRatio = 0.15 + powerRatio * 0.28;
+            const clampedRatio = Math.max(0.3, Math.min(1.0, powerRatio));
+            const shootPower = 20 + clampedRatio * 22; // 20m/s to 42m/s
+            const heightRatio = 0.12 + clampedRatio * 0.28;
             const spin = this.controls.moveVector.z * 3.5;
 
             this.humanPlayer.triggerKick();
@@ -236,35 +224,36 @@ class GameApp {
             if (this.match) this.match.stats.home.shots++;
         };
 
-        // Lob Pass / Cross
+        // 4. Lob Pass / Cross
         this.controls.callbacks.onLobPass = (powerRatio) => {
-            if (!this.humanPlayer || this.ball.owner !== this.humanPlayer) return;
+            if (!this.canPlayerKick()) return;
 
             const forward = new THREE.Vector3(Math.sin(this.humanPlayer.rotation), 0, Math.cos(this.humanPlayer.rotation));
-            const lobPower = 16 + powerRatio * 18;
-            const heightRatio = 0.55;
+            const clampedRatio = Math.max(0.3, Math.min(1.0, powerRatio));
+            const lobPower = 18 + clampedRatio * 18;
+            const heightRatio = 0.52;
 
             this.humanPlayer.triggerKick();
             this.ball.kick(forward, lobPower, heightRatio, 0, this.humanPlayer);
             if (this.match) this.match.stats.home.passes++;
 
-            setTimeout(() => this.switchActivePlayerToClosest(), 400);
+            setTimeout(() => this.switchActivePlayerToClosest(), 350);
         };
 
-        // Slide Tackle
+        // 5. Slide Tackle
         this.controls.callbacks.onTackle = () => {
             if (!this.humanPlayer) return;
             this.humanPlayer.triggerSlideTackle();
         };
 
-        // Switch active user player
+        // 6. Switch active user player
         this.controls.callbacks.onSwitchPlayer = () => {
             this.switchActivePlayerToClosest();
         };
 
-        // Skill Moves (Roulette, Stepover)
+        // 7. Skill Moves (Roulette 360, Stepover)
         this.controls.callbacks.onSkillMove = () => {
-            if (!this.humanPlayer || this.ball.owner !== this.humanPlayer) return;
+            if (!this.canPlayerKick()) return;
             this.humanPlayer.triggerSkill('roulette');
         };
     }
@@ -273,47 +262,49 @@ class GameApp {
         requestAnimationFrame((t) => this.gameLoop(t));
 
         if (!this.lastTime) this.lastTime = timestamp;
-        const dt = Math.min((timestamp - this.lastTime) / 1000, 0.1);
+        const dt = Math.min((timestamp - this.lastTime) / 1000, 0.05);
         this.lastTime = timestamp;
 
-        if (this.isMatchRunning && this.match) {
-            // 1. Update Controller Inputs
-            this.controls.update(dt);
+        this.controls.update(dt);
 
-            // 2. User Active Player Movement
-            if (this.humanPlayer && this.match.state === 'PLAYING') {
-                this.humanPlayer.move(
-                    this.controls.moveVector.x,
-                    this.controls.moveVector.z,
-                    this.controls.isSprinting,
-                    dt
-                );
+        if (this.isMatchRunning && this.match) {
+            if (!this.match.isPaused) {
+                // Update match clock & check goal bounds
+                this.match.update(dt, this.teamHome, this.teamAway, this.ball);
+
+                // Update Controlled Human Player
+                if (this.humanPlayer) {
+                    this.humanPlayer.updateControlled(this.controls, dt, this.ball);
+                }
+
+                // Update AI Teammates
+                this.ai.updateTeammates(this.teamHome, this.humanPlayer, this.ball, dt);
+
+                // Update Opponent AI
+                this.ai.updateOpponents(this.teamAway, this.teamHome, this.ball, dt);
+
+                // Update Ball Physics
+                this.ball.update(dt);
+
+                // Check auto-switch when user loses ball
+                if (!this.ball.owner || this.ball.owner.isHome === false) {
+                    // Periodically keep closest player active
+                    if (Math.random() < 0.05) {
+                        this.switchActivePlayerToClosest();
+                    }
+                }
             }
 
-            // 3. Update Ball Physics
-            this.ball.update(dt);
+            // Update 3D Camera Focus
+            if (this.match.state === 'REPLAY') {
+                this.engine3D.updateReplayCamera(this.ball.position, this.match.replayTargetPlayer?.position);
+            } else {
+                this.engine3D.updateGameplayCamera(this.ball.position, this.humanPlayer?.position);
+            }
 
-            // 4. Update AI for Teammates & Opponents
-            this.ai.update(this.teamHome, this.teamAway, this.ball, this.humanPlayer, dt);
-
-            // 5. Update All Player 3D Rigs
-            this.teamHome.forEach(p => p.update(dt));
-            this.teamAway.forEach(p => p.update(dt));
-
-            // 6. Update Match Rules, Stats & Replay
-            this.match.update(this.teamHome, this.teamAway, this.ball, dt);
-
-            // 7. Update HUD UI & 2D Mini-Radar
-            this.ui.updateHUD(this.match, this.humanPlayer, this.controls.shootPower || this.controls.lobPower);
+            // Update UI HUD Overlay & 2D Radar
+            this.ui.updateHUD(this.match, this.humanPlayer, this.controls.shootPower);
             this.ui.renderRadar(this.teamHome, this.teamAway, this.ball);
-
-            // 8. Update Camera Focus
-            this.engine3D.updateCamera(
-                this.ball.position,
-                this.humanPlayer ? this.humanPlayer.position : null,
-                this.match.isReplayPlaying,
-                this.match.replayAngle
-            );
         }
 
         // Render 3D Scene
@@ -321,7 +312,7 @@ class GameApp {
     }
 }
 
-// Bootstrap on window load
+// Instantiate and start app on load
 window.addEventListener('DOMContentLoaded', () => {
-    window.gameApp = new GameApp();
+    window.fcApp = new GameApp();
 });
