@@ -1,6 +1,6 @@
 /**
  * EA FC 27 x FM 27 - Football Manager Career Mode Core Engine
- * Complete Lineup & Substitution Management, Tactical Instructions, Live Match Simulation
+ * Complete Lineup, Individual Player Roles & Duties, Substitution Management, Tactical Instructions
  */
 
 import { GLOBAL_CLUBS, GLOBAL_LEAGUES } from './database.js';
@@ -22,14 +22,14 @@ export class FootballManagerEngine {
         this.inbox = [];
 
         // Board Confidence & Morale
-        this.boardConfidence = 85; // 0 to 100
+        this.boardConfidence = 85;
         this.fanConfidence = 88;
 
         // In-depth FM Tactics Object
         this.tactics = {
             formation: '4-3-3',
             style: 'Gegenpress',
-            mentality: 'Attacking', // Very Defensive, Balanced, Attacking, Overload
+            mentality: 'Attacking',
             tempo: 'High',
             passing: 'Shorter',
             width: 'Fairly Wide',
@@ -43,9 +43,22 @@ export class FootballManagerEngine {
 
         // Transfer Market State
         this.transferHistory = [];
-
-        // In-Match Live Simulation State
         this.liveMatch = null;
+    }
+
+    getDefaultRoleForPosition(pos) {
+        if (!pos) return 'Standard Role';
+        if (pos === 'GK') return 'Sweeper Keeper';
+        if (pos.includes('CB')) return 'Ball-Playing Defender';
+        if (pos.includes('LB') || pos.includes('LWB')) return 'Inverted Wing-Back';
+        if (pos.includes('RB') || pos.includes('RWB')) return 'Complete Wing-Back';
+        if (pos.includes('CDM')) return 'Deep-Lying Playmaker';
+        if (pos.includes('CM')) return 'Box-to-Box Midfielder';
+        if (pos.includes('CAM')) return 'Advanced Playmaker';
+        if (pos.includes('LW') || pos.includes('LM')) return 'Inverted Winger';
+        if (pos.includes('RW') || pos.includes('RM')) return 'Inside Forward';
+        if (pos.includes('ST')) return 'Advanced Forward';
+        return 'Standard Role';
     }
 
     startNewCareer(clubId) {
@@ -58,6 +71,22 @@ export class FootballManagerEngine {
         this.currentMatchday = 1;
         this.boardConfidence = 85;
         this.fanConfidence = 88;
+
+        // Ensure every player has initial setup
+        this.userClub.players.forEach((p, idx) => {
+            p.isStarting = idx < 11;
+            if (!p.individualRole) p.individualRole = this.getDefaultRoleForPosition(p.role);
+            if (!p.duty) p.duty = p.role.includes('ST') || p.role.includes('W') ? 'Attack' : p.role.includes('CB') || p.role === 'GK' ? 'Defend' : 'Support';
+            if (!p.instructions) {
+                p.instructions = {
+                    takeRisks: true,
+                    dribbleMore: true,
+                    shootMore: p.role.includes('ST'),
+                    cutInside: p.role.includes('W'),
+                    tightMarking: p.role.includes('CB') || p.role.includes('DM')
+                };
+            }
+        });
 
         // Initialize League Table for all clubs in this league
         this.initLeagueSeason();
@@ -84,15 +113,26 @@ export class FootballManagerEngine {
         return true;
     }
 
-    // Get Starting XI (11 players)
+    // Get Starting XI (Always guarantees 11 players)
     getStartingXI() {
-        if (!this.userClub) return [];
-        return this.userClub.players.filter(p => p.isStarting);
+        if (!this.userClub || !this.userClub.players) return [];
+        let starting = this.userClub.players.filter(p => p.isStarting);
+        if (starting.length === 0) {
+            // Auto-assign first 11 as starting XI
+            this.userClub.players.forEach((p, i) => {
+                p.isStarting = i < 11;
+                if (!p.individualRole) p.individualRole = this.getDefaultRoleForPosition(p.role);
+                if (!p.duty) p.duty = p.role.includes('ST') || p.role.includes('W') ? 'Attack' : p.role.includes('CB') || p.role === 'GK' ? 'Defend' : 'Support';
+            });
+            starting = this.userClub.players.slice(0, 11);
+        }
+        return starting;
     }
 
     // Get Bench Substitutes
     getBenchPlayers() {
-        if (!this.userClub) return [];
+        if (!this.userClub || !this.userClub.players) return [];
+        this.getStartingXI(); // Ensure starting XI is initialized
         return this.userClub.players.filter(p => !p.isStarting);
     }
 
@@ -114,23 +154,32 @@ export class FootballManagerEngine {
         outPlayer.isStarting = false;
         inPlayer.isStarting = true;
 
-        // Preserve tactical role position for inPlayer
-        const tempRole = inPlayer.role;
-        inPlayer.currentTacticalRole = outPlayer.role;
+        if (!inPlayer.individualRole) inPlayer.individualRole = this.getDefaultRoleForPosition(inPlayer.role);
+        if (!inPlayer.duty) inPlayer.duty = 'Support';
 
         this.saveCareer();
         return {
             success: true,
-            message: `🔄 Pergantian Pemain: ${inPlayer.name} (IN) menggantikan ${outPlayer.name} (OUT)!`,
+            message: `🔄 Pergantian Pemain Berhasil: ${inPlayer.name} (IN) menggantikan ${outPlayer.name} (OUT)!`,
             outPlayer,
             inPlayer
         };
     }
 
+    updateIndividualPlayerTactics(playerId, role, duty, instructions) {
+        if (!this.userClub) return;
+        const p = this.userClub.players.find(x => x.id === playerId);
+        if (!p) return;
+
+        p.individualRole = role;
+        p.duty = duty;
+        if (instructions) p.instructions = instructions;
+        this.saveCareer();
+    }
+
     initLeagueSeason() {
         const leagueClubs = GLOBAL_CLUBS.filter(c => c.leagueId === this.userLeagueId);
 
-        // Build Standings table
         this.standings = leagueClubs.map(club => ({
             id: club.id,
             name: club.name,
@@ -147,7 +196,6 @@ export class FootballManagerEngine {
             form: []
         }));
 
-        // Generate Season Fixture Schedule
         this.fixtures = [];
         const n = leagueClubs.length;
         for (let round = 1; round <= (n - 1) * 2; round++) {
@@ -307,7 +355,7 @@ export class FootballManagerEngine {
             this.updateStandingsRecord(match.awayId, match.awayScore, match.homeScore);
         });
 
-        // Weekly Finances: Ticket revenue on Home games & Weekly Wage deduction
+        // Weekly Finances
         const userMatch = mdObj.matches.find(m => m.homeId === this.userClub.id || m.awayId === this.userClub.id);
         if (userMatch) {
             if (userMatch.homeId === this.userClub.id) {
@@ -391,7 +439,15 @@ export class FootballManagerEngine {
         }
 
         this.userClub.transferBudget -= offerFee;
-        const newPlayer = { ...player, isStarting: false, wage: offerWage, fitness: 100, morale: 'Superb' };
+        const newPlayer = {
+            ...player,
+            isStarting: false,
+            wage: offerWage,
+            fitness: 100,
+            morale: 'Superb',
+            individualRole: this.getDefaultRoleForPosition(player.role),
+            duty: 'Support'
+        };
         this.userClub.players.push(newPlayer);
 
         this.transferHistory.unshift({
@@ -423,6 +479,13 @@ export class FootballManagerEngine {
 
         this.userClub.players.splice(pIndex, 1);
         this.userClub.transferBudget += soldFee;
+
+        // If starting player was sold, promote first bench player
+        const starting = this.userClub.players.filter(p => p.isStarting);
+        if (starting.length < 11 && this.userClub.players.length >= 11) {
+            const nextBench = this.userClub.players.find(p => !p.isStarting);
+            if (nextBench) nextBench.isStarting = true;
+        }
 
         this.transferHistory.unshift({
             date: `Matchday ${this.currentMatchday}`,
@@ -478,6 +541,21 @@ export class FootballManagerEngine {
             this.fanConfidence = data.fanConfidence;
             this.tactics = data.tactics || this.tactics;
             this.transferHistory = data.transferHistory || [];
+
+            // Ensure players have isStarting and individual roles
+            if (this.userClub && this.userClub.players) {
+                let startCount = 0;
+                this.userClub.players.forEach((p, i) => {
+                    if (p.isStarting === undefined) p.isStarting = i < 11;
+                    if (p.isStarting) startCount++;
+                    if (!p.individualRole) p.individualRole = this.getDefaultRoleForPosition(p.role);
+                    if (!p.duty) p.duty = 'Support';
+                });
+                if (startCount === 0) {
+                    this.userClub.players.slice(0, 11).forEach(p => p.isStarting = true);
+                }
+            }
+
             return true;
         } catch (e) {
             console.warn('Failed loading save:', e);

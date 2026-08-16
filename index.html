@@ -44,7 +44,7 @@
                     <div id="btn-mode-fm-career" class="menu-tile-card" style="border-color: var(--neon-volt); background: linear-gradient(135deg, rgba(0,245,155,0.15) 0%, rgba(18,26,47,0.9) 100%);">
                         <div class="tile-icon">👔</div>
                         <h2 class="tile-title" style="color: var(--neon-volt);">FM 27 CAREER</h2>
-                        <p class="tile-desc">Mode Manajer: Papan taktik interaktif, pergantian pemain (Substitutions), bursa transfer, & liga dunia.</p>
+                        <p class="tile-desc">Mode Manajer: Papan taktik interaktif, peran per individu, pergantian pemain (Substitutions), bursa transfer, & liga dunia.</p>
                     </div>
 
                     <!-- Kick Off Tile -->
@@ -113,7 +113,7 @@
 
                     <div class="fm-nav-tabs">
                         <button class="fm-tab-btn active" data-tab="tab-fm-overview">📊 Dashboard</button>
-                        <button class="fm-tab-btn" data-tab="tab-fm-tactics">📋 Taktik & Substitusi</button>
+                        <button class="fm-tab-btn" data-tab="tab-fm-tactics">📋 Taktik & Formasi Skuad</button>
                         <button class="fm-tab-btn" data-tab="tab-fm-squad">👥 Skuad</button>
                         <button class="fm-tab-btn" data-tab="tab-fm-market">💼 Bursa Transfer</button>
                         <button class="fm-tab-btn" data-tab="tab-fm-standings">🏆 Klasemen</button>
@@ -161,11 +161,11 @@
                         </div>
                     </div>
 
-                    <!-- TAB 2: INTERACTIVE TACTICS & PITCH SUBSTITUTIONS -->
+                    <!-- TAB 2: INTERACTIVE TACTICS, PITCH FORMATION & INDIVIDUAL PLAYER ROLES -->
                     <div id="tab-fm-tactics" class="fm-tab-content hidden">
                         <div class="fm-tactics-split-layout">
                             <!-- Left: 2D Pitch Lineup -->
-                            <div class="fm-card" style="flex: 1.2;">
+                            <div class="fm-card" style="flex: 1.3;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                                     <h3 style="color: var(--neon-volt);">PAPAN FORMASI (STARTING XI)</h3>
                                     <select id="fm-formation-select" class="fm-select" style="width: auto; padding: 0.4rem 0.8rem;">
@@ -176,12 +176,15 @@
                                     </select>
                                 </div>
                                 <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
-                                    💡 <b>Petunjuk:</b> Klik pemain di lapangan, lalu klik pemain cadangan di sebelah kanan untuk melakukan <b>Pergantian Pemain (Substitution)</b>.
+                                    💡 <b>Petunjuk:</b> Klik pemain di lapangan untuk mengatur <b>Peran Individu & Tugas</b>, atau klik pemain cadangan di kanan untuk <b>Substitusi</b>.
                                 </p>
                                 
                                 <div class="fm-pitch-wrapper">
                                     <div id="fm-tactics-pitch" class="fm-tactics-pitch"></div>
                                 </div>
+
+                                <!-- Individual Player Customizer Below Pitch -->
+                                <div id="fm-player-tactics-detail" style="margin-top: 1.2rem;"></div>
                             </div>
 
                             <!-- Right: Bench & Tactical Instructions -->
@@ -243,6 +246,7 @@
                                             <th>Nama Pemain</th>
                                             <th>Usia</th>
                                             <th>OVR</th>
+                                            <th>Peran Individu</th>
                                             <th>Nilai Pasar</th>
                                             <th>Gaji Mingguan</th>
                                             <th>Aksi</th>
@@ -305,7 +309,6 @@
         <div id="screen-fm-live-match" class="ui-screen hidden">
             <div class="summary-container" style="padding: 1.5rem;">
                 <div class="summary-card" style="width: 850px; text-align: left;">
-                    <!-- Match Scoreboard Header -->
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
                         <div>
                             <div style="font-size: 0.85rem; color: var(--neon-volt); font-weight: 800;">LIVE MATCH ENGINE FM 27</div>
@@ -318,17 +321,15 @@
                         </div>
                     </div>
 
-                    <!-- Tactical Shouts Bar -->
                     <div style="display: flex; gap: 0.8rem; margin-bottom: 1.5rem; background: rgba(255,255,255,0.03); padding: 0.8rem; border-radius: 8px;">
                         <span style="font-size: 0.9rem; font-weight: 700; color: var(--neon-cyan); align-self: center;">Instruksi Manajer (Shouts):</span>
-                        <button id="btn-shout-more" class="nav-tag-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📢 Tingkatkan Tekanan (Demand More)</button>
-                        <button id="btn-shout-praise" class="nav-tag-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">👏 Beri Pujian (Praise)</button>
-                        <button id="btn-shout-focus" class="nav-tag-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">🎯 Jaga Fokus (Focus)</button>
+                        <button id="btn-shout-more" class="nav-tag-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📢 Tingkatkan Tekanan</button>
+                        <button id="btn-shout-praise" class="nav-tag-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">👏 Beri Pujian</button>
+                        <button id="btn-shout-focus" class="nav-tag-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">🎯 Jaga Fokus</button>
                     </div>
 
-                    <!-- Live Commentary Feed -->
                     <div style="margin-bottom: 1.5rem;">
-                        <h4 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Teks Komentar Pertandingan & Peluang:</h4>
+                        <h4 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Teks Komentar Pertandingan:</h4>
                         <div id="live-commentary-feed" class="live-commentary-box"></div>
                     </div>
                 </div>

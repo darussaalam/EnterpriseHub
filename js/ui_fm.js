@@ -1,6 +1,6 @@
 /**
  * EA FC 27 x FM 27 - Football Manager UI Controller
- * Interactive 2D Pitch Formation Board, Live Player Substitutions & Match Simulator
+ * Complete Individual Player Role & Duty Setup, Interactive 2D Pitch Lineup, Substitutions & Live Match
  */
 
 import { fmEngine } from './fm_manager.js';
@@ -76,16 +76,22 @@ export class FMUIManager {
         }
     }
 
-    // Render 2D Tactical Pitch Formation Board with Interactive Substitution
+    // Render 2D Tactical Pitch Formation Board with Individual Player Role & Duty Setup
     renderTacticsPitchBoard() {
         const pitchEl = document.getElementById('fm-tactics-pitch');
         const benchEl = document.getElementById('fm-tactics-bench-list');
+        const playerDetailEl = document.getElementById('fm-player-tactics-detail');
         if (!pitchEl || !benchEl || !fmEngine.userClub) return;
 
         const formationKey = fmEngine.tactics.formation || '4-3-3';
         const formConfig = FORMATIONS[formationKey] || FORMATIONS['4-3-3'];
         const startingXI = fmEngine.getStartingXI();
         const benchPlayers = fmEngine.getBenchPlayers();
+
+        // Default selected player to first striker or first player if null
+        if (!this.selectedPitchPlayer || !startingXI.some(p => p.id === this.selectedPitchPlayer.id)) {
+            this.selectedPitchPlayer = startingXI[10] || startingXI[0];
+        }
 
         // 1. Draw 11 Pitch Nodes
         pitchEl.innerHTML = '';
@@ -106,7 +112,7 @@ export class FMUIManager {
                     <span class="node-ovr">${player.ovr}</span>
                 </div>
                 <div class="node-name">${player.name}</div>
-                <div class="node-role">${player.role}</div>
+                <div class="node-role">${player.role} • ${player.duty || 'Atk'}</div>
             `;
 
             node.addEventListener('click', (e) => {
@@ -119,16 +125,116 @@ export class FMUIManager {
             pitchEl.appendChild(node);
         });
 
-        // 2. Draw Bench Substitutes List
+        // 2. Render Individual Player Tactics Card (Role, Duty & Individual Instructions)
+        if (playerDetailEl && this.selectedPitchPlayer) {
+            const p = this.selectedPitchPlayer;
+            const pRole = p.individualRole || fmEngine.getDefaultRoleForPosition(p.role);
+            const pDuty = p.duty || 'Attack';
+            const inst = p.instructions || { takeRisks: true, dribbleMore: true, shootMore: true, cutInside: false, tightMarking: false };
+
+            playerDetailEl.innerHTML = `
+                <div class="fm-player-detail-card">
+                    <div class="fpd-header">
+                        <div class="fpd-avatar">${p.ovr}</div>
+                        <div class="fpd-title">
+                            <h4>${p.name}</h4>
+                            <div class="fpd-sub">${p.role} • Usia ${p.age} thn • Kebugaran: 100% • Moral: ${p.morale || 'Superb'}</div>
+                        </div>
+                    </div>
+
+                    <div class="fpd-stats-mini">
+                        <span>PAC <b>${p.pace}</b></span>
+                        <span>SHO <b>${p.shoot}</b></span>
+                        <span>PAS <b>${p.pass}</b></span>
+                        <span>DRI <b>${p.dribble}</b></span>
+                        <span>DEF <b>${p.def}</b></span>
+                        <span>PHY <b>${p.phy}</b></span>
+                    </div>
+
+                    <div class="fpd-controls-grid">
+                        <div class="form-group">
+                            <label>Peran Individu (Individual Role):</label>
+                            <select id="p-individual-role-select" class="fm-select">
+                                <option value="Sweeper Keeper" ${pRole === 'Sweeper Keeper' ? 'selected' : ''}>Sweeper Keeper</option>
+                                <option value="Goalkeeper" ${pRole === 'Goalkeeper' ? 'selected' : ''}>Traditional Goalkeeper</option>
+                                <option value="Ball-Playing Defender" ${pRole === 'Ball-Playing Defender' ? 'selected' : ''}>Ball-Playing Defender (BPD)</option>
+                                <option value="Central Defender" ${pRole === 'Central Defender' ? 'selected' : ''}>Central Defender (CD)</option>
+                                <option value="Inverted Wing-Back" ${pRole === 'Inverted Wing-Back' ? 'selected' : ''}>Inverted Wing-Back (IWB)</option>
+                                <option value="Complete Wing-Back" ${pRole === 'Complete Wing-Back' ? 'selected' : ''}>Complete Wing-Back (CWB)</option>
+                                <option value="Deep-Lying Playmaker" ${pRole === 'Deep-Lying Playmaker' ? 'selected' : ''}>Deep-Lying Playmaker (DLP)</option>
+                                <option value="Box-to-Box Midfielder" ${pRole === 'Box-to-Box Midfielder' ? 'selected' : ''}>Box-to-Box Midfielder (BBM)</option>
+                                <option value="Advanced Playmaker" ${pRole === 'Advanced Playmaker' ? 'selected' : ''}>Advanced Playmaker (AP)</option>
+                                <option value="Inverted Winger" ${pRole === 'Inverted Winger' ? 'selected' : ''}>Inverted Winger (IW)</option>
+                                <option value="Inside Forward" ${pRole === 'Inside Forward' ? 'selected' : ''}>Inside Forward (IF)</option>
+                                <option value="Advanced Forward" ${pRole === 'Advanced Forward' ? 'selected' : ''}>Advanced Forward (AF)</option>
+                                <option value="Poacher" ${pRole === 'Poacher' ? 'selected' : ''}>Poacher</option>
+                                <option value="Target Forward" ${pRole === 'Target Forward' ? 'selected' : ''}>Target Forward</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tugas Pemain (Duty):</label>
+                            <select id="p-duty-select" class="fm-select">
+                                <option value="Attack" ${pDuty === 'Attack' ? 'selected' : ''}>⚔️ Attack (Menyerang Penuh)</option>
+                                <option value="Support" ${pDuty === 'Support' ? 'selected' : ''}>⚖️ Support (Mendukung / Menghubungkan)</option>
+                                <option value="Defend" ${pDuty === 'Defend' ? 'selected' : ''}>🛡️ Defend (Disiplin Bertahan)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="fpd-toggles-row">
+                        <label class="toggle-pill">
+                            <input type="checkbox" id="chk-take-risks" ${inst.takeRisks ? 'checked' : ''}>
+                            <span>🎯 Ambil Risiko Umpan (Take More Risks)</span>
+                        </label>
+                        <label class="toggle-pill">
+                            <input type="checkbox" id="chk-dribble-more" ${inst.dribbleMore ? 'checked' : ''}>
+                            <span>⚡ Dribble Melewati Lawan (Dribble More)</span>
+                        </label>
+                        <label class="toggle-pill">
+                            <input type="checkbox" id="chk-shoot-more" ${inst.shootMore ? 'checked' : ''}>
+                            <span>🚀 Tembak Bila Ada Ruang (Shoot on Sight)</span>
+                        </label>
+                        <label class="toggle-pill">
+                            <input type="checkbox" id="chk-tight-marking" ${inst.tightMarking ? 'checked' : ''}>
+                            <span>🛡️ Tekel & Kawalan Ketat (Tight Marking)</span>
+                        </label>
+                    </div>
+
+                    <button id="btn-save-player-role" class="btn-primary-fc" style="width: 100%; padding: 0.6rem; margin-top: 0.8rem; font-size: 0.9rem;">
+                        SIMPAN PENGATURAN INDIVIDU ${p.name.toUpperCase()}
+                    </button>
+                </div>
+            `;
+
+            // Bind Individual Player Save
+            document.getElementById('btn-save-player-role')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const newRole = document.getElementById('p-individual-role-select')?.value;
+                const newDuty = document.getElementById('p-duty-select')?.value;
+                const instructions = {
+                    takeRisks: document.getElementById('chk-take-risks')?.checked,
+                    dribbleMore: document.getElementById('chk-dribble-more')?.checked,
+                    shootMore: document.getElementById('chk-shoot-more')?.checked,
+                    tightMarking: document.getElementById('chk-tight-marking')?.checked
+                };
+
+                fmEngine.updateIndividualPlayerTactics(p.id, newRole, newDuty, instructions);
+                alert(`Pengaturan taktik individu untuk ${p.name} berhasil disimpan!`);
+                this.renderTacticsPitchBoard();
+            });
+        }
+
+        // 3. Draw Bench Substitutes List
         benchEl.innerHTML = benchPlayers.map(bp => `
             <div class="bench-player-card">
                 <div class="bench-ovr">${bp.ovr}</div>
                 <div class="bench-info">
                     <div class="bench-name"><strong>${bp.name}</strong> (${bp.role})</div>
-                    <div class="bench-meta">Kebugaran: 100% • Moral: ${bp.morale}</div>
+                    <div class="bench-meta">Usia ${bp.age} • OVR ${bp.ovr} • Kebugaran 100%</div>
                 </div>
                 <button class="btn-primary-fc btn-bench-sub" style="padding: 0.4rem 0.9rem; font-size: 0.8rem;" data-bench-id="${bp.id}">
-                    ${this.selectedPitchPlayer ? `GANTI DGN ${this.selectedPitchPlayer.name.split(' ')[0]}` : 'PILIH UNTUK SUB'}
+                    ${this.selectedPitchPlayer ? `GANTI DGN ${this.selectedPitchPlayer.name.split(' ')[0]}` : 'PILIH SUB'}
                 </button>
             </div>
         `).join('');
@@ -140,13 +246,13 @@ export class FMUIManager {
                 const benchId = btn.dataset.benchId;
 
                 if (!this.selectedPitchPlayer) {
-                    alert('Klik pemain di lapangan Starting XI terlebih dahulu, lalu klik pemain cadangan ini untuk menggantikannya!');
+                    alert('Klik pemain di lapangan Starting XI terlebih dahulu!');
                     return;
                 }
 
                 const res = fmEngine.substitutePlayer(this.selectedPitchPlayer.id, benchId);
                 alert(res.message);
-                this.selectedPitchPlayer = null;
+                this.selectedPitchPlayer = res.inPlayer;
                 this.renderTacticsPitchBoard();
                 this.renderSquadList();
                 soundEngine.playUIClick();
@@ -196,6 +302,7 @@ export class FMUIManager {
                 <td><strong>${p.name}</strong></td>
                 <td>${p.age} thn</td>
                 <td><span class="ovr-badge">${p.ovr}</span></td>
+                <td>${p.individualRole || 'Standard'}</td>
                 <td>€${(p.val / 1000000).toFixed(1)}M</td>
                 <td>€${Math.round(p.wage || 50000).toLocaleString()}/w</td>
                 <td>
@@ -315,7 +422,6 @@ export class FMUIManager {
         if (formEl) formEl.value = t.formation || '4-3-3';
     }
 
-    // Launch Live FM Match Simulation View
     openLiveMatchSimulation() {
         const nextMatch = fmEngine.getCurrentUserMatch();
         if (!nextMatch) {
