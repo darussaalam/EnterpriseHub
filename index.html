@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EA SPORTS FC 27 x FOOTBALL MANAGER 27 - Web Edition</title>
-    <meta name="description" content="Mainkan game sepak bola 3D EA FC 27 & Football Manager 27 langsung di browser web. Fitur karir manajer lengkap, bursa transfer, liga dunia, dan gameplay 3D realistis.">
+    <meta name="description" content="Mainkan game sepak bola 3D EA FC 27 & Football Manager 27 langsung di browser web. Fitur karir manajer lengkap, bursa transfer, liga dunia, pergantian pemain (substitution), dan gameplay 3D realistis.">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +44,7 @@
                     <div id="btn-mode-fm-career" class="menu-tile-card" style="border-color: var(--neon-volt); background: linear-gradient(135deg, rgba(0,245,155,0.15) 0%, rgba(18,26,47,0.9) 100%);">
                         <div class="tile-icon">👔</div>
                         <h2 class="tile-title" style="color: var(--neon-volt);">FM 27 CAREER</h2>
-                        <p class="tile-desc">Mode Manajer Mendalam: Bursa transfer, negosiasi gaji, finansial klub, taktik, & liga dunia lengkap.</p>
+                        <p class="tile-desc">Mode Manajer: Papan taktik interaktif, pergantian pemain (Substitutions), bursa transfer, & liga dunia.</p>
                     </div>
 
                     <!-- Kick Off Tile -->
@@ -113,8 +113,8 @@
 
                     <div class="fm-nav-tabs">
                         <button class="fm-tab-btn active" data-tab="tab-fm-overview">📊 Dashboard</button>
+                        <button class="fm-tab-btn" data-tab="tab-fm-tactics">📋 Taktik & Substitusi</button>
                         <button class="fm-tab-btn" data-tab="tab-fm-squad">👥 Skuad</button>
-                        <button class="fm-tab-btn" data-tab="tab-fm-tactics">📋 Taktik FM</button>
                         <button class="fm-tab-btn" data-tab="tab-fm-market">💼 Bursa Transfer</button>
                         <button class="fm-tab-btn" data-tab="tab-fm-standings">🏆 Klasemen</button>
                         <button class="fm-tab-btn" data-tab="tab-fm-inbox">📬 Kotak Masuk</button>
@@ -134,7 +134,7 @@
                                 <div id="fm-next-match-card" class="next-match-body"></div>
                                 <div class="fm-match-actions">
                                     <button id="btn-fm-play-3d" class="btn-primary-fc" style="padding: 0.8rem 1.8rem;">🎮 MAINKAN DI LAPANGAN (3D)</button>
-                                    <button id="btn-fm-quick-sim" class="nav-tag-btn" style="padding: 0.8rem 1.8rem;">⚡ SIMULASI CEPAT (FM ENGINE)</button>
+                                    <button id="btn-fm-quick-sim" class="nav-tag-btn" style="padding: 0.8rem 1.8rem; border-color: var(--neon-cyan); color: var(--neon-cyan);">⚡ SIMULASI LIVE (FM ENGINE)</button>
                                 </div>
                             </div>
 
@@ -161,14 +161,84 @@
                         </div>
                     </div>
 
-                    <!-- TAB 2: SQUAD LIST -->
+                    <!-- TAB 2: INTERACTIVE TACTICS & PITCH SUBSTITUTIONS -->
+                    <div id="tab-fm-tactics" class="fm-tab-content hidden">
+                        <div class="fm-tactics-split-layout">
+                            <!-- Left: 2D Pitch Lineup -->
+                            <div class="fm-card" style="flex: 1.2;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <h3 style="color: var(--neon-volt);">PAPAN FORMASI (STARTING XI)</h3>
+                                    <select id="fm-formation-select" class="fm-select" style="width: auto; padding: 0.4rem 0.8rem;">
+                                        <option value="4-3-3">4-3-3 Attack</option>
+                                        <option value="4-2-3-1">4-2-3-1 Balanced</option>
+                                        <option value="4-4-2">4-4-2 Classic</option>
+                                        <option value="3-5-2">3-5-2 Wing Play</option>
+                                    </select>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                                    💡 <b>Petunjuk:</b> Klik pemain di lapangan, lalu klik pemain cadangan di sebelah kanan untuk melakukan <b>Pergantian Pemain (Substitution)</b>.
+                                </p>
+                                
+                                <div class="fm-pitch-wrapper">
+                                    <div id="fm-tactics-pitch" class="fm-tactics-pitch"></div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Bench & Tactical Instructions -->
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 1.2rem;">
+                                <!-- Bench Substitutes Panel -->
+                                <div class="fm-card" style="max-height: 280px; display: flex; flex-direction: column;">
+                                    <h4 style="color: var(--neon-cyan); margin-bottom: 0.8rem;">PEMAIN CADANGAN (BENCH SUBS)</h4>
+                                    <div id="fm-tactics-bench-list" class="bench-scroll-container"></div>
+                                </div>
+
+                                <!-- Tactical Instructions Form -->
+                                <div class="fm-card">
+                                    <h4 style="color: var(--neon-gold); margin-bottom: 0.8rem;">INSTRUKSI TAKTIK TIM</h4>
+                                    <div class="tactics-form-grid">
+                                        <div class="form-group">
+                                            <label>Gaya Taktik Utama:</label>
+                                            <select id="tactics-style-select" class="fm-select">
+                                                <option value="Gegenpress">Gegenpress (High Pressing)</option>
+                                                <option value="Tiki-Taka">Tiki-Taka (Short Passing)</option>
+                                                <option value="Direct Counter-Attack">Direct Counter-Attack</option>
+                                                <option value="Fluid Attacking">Fluid Attacking</option>
+                                                <option value="Catenaccio">Catenaccio (Low Block)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Mentalitas Tim:</label>
+                                            <select id="tactics-mentality-select" class="fm-select">
+                                                <option value="Very Defensive">Sangat Bertahan</option>
+                                                <option value="Balanced">Seimbang (Balanced)</option>
+                                                <option value="Attacking">Menyerang (Attacking)</option>
+                                                <option value="Overload">All-Out Attack</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Tempo Permainan:</label>
+                                            <select id="tactics-tempo-select" class="fm-select">
+                                                <option value="Low">Rendah / Sabar</option>
+                                                <option value="Standard">Standar</option>
+                                                <option value="High">Tinggi / Cepat</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button id="btn-save-tactics" class="btn-primary-fc" style="margin-top: 1rem; width: 100%; padding: 0.6rem;">SIMPAN TAKTIK</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: SQUAD LIST -->
                     <div id="tab-fm-squad" class="fm-tab-content hidden">
                         <div class="fm-card">
-                            <h3 style="margin-bottom: 1rem; color: var(--neon-cyan);">DAFTAR PEMAIN & KONTRAK SKUAD</h3>
+                            <h3 style="margin-bottom: 1rem; color: var(--neon-cyan);">DAFTAR LENGKAP PEMAIN SKUAD</h3>
                             <div style="overflow-x: auto;">
                                 <table class="fm-table">
                                     <thead>
                                         <tr>
+                                            <th>Status</th>
                                             <th>Pos</th>
                                             <th>Nama Pemain</th>
                                             <th>Usia</th>
@@ -184,49 +254,10 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: TACTICS & INSTRUCTIONS -->
-                    <div id="tab-fm-tactics" class="fm-tab-content hidden">
-                        <div class="fm-card" style="max-width: 800px; margin: 0 auto;">
-                            <h3 style="margin-bottom: 1.5rem; color: var(--neon-volt);">PENGATURAN TAKTIK MENDALAM (FM 27)</h3>
-                            <div class="tactics-form-grid">
-                                <div class="form-group">
-                                    <label>Gaya Taktik Utama:</label>
-                                    <select id="tactics-style-select" class="fm-select">
-                                        <option value="Gegenpress">Gegenpress (High Pressing & Fast Transition)</option>
-                                        <option value="Tiki-Taka">Tiki-Taka (Possession & Short Passing)</option>
-                                        <option value="Direct Counter-Attack">Direct Counter-Attack</option>
-                                        <option value="Fluid Attacking">Fluid Attacking</option>
-                                        <option value="Catenaccio">Catenaccio (Solid Defense & Low Block)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Mentalitas Tim:</label>
-                                    <select id="tactics-mentality-select" class="fm-select">
-                                        <option value="Very Defensive">Sangat Bertahan (Park the Bus)</option>
-                                        <option value="Balanced">Seimbang (Balanced)</option>
-                                        <option value="Attacking">Menyerang (Attacking)</option>
-                                        <option value="Overload">Overload Attack (All Out)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Tempo Permainan:</label>
-                                    <select id="tactics-tempo-select" class="fm-select">
-                                        <option value="Low">Rendah / Sabar (Patient Build-up)</option>
-                                        <option value="Standard">Standar</option>
-                                        <option value="High">Tinggi / Cepat (High Tempo)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button id="btn-save-tactics" class="btn-primary-fc" style="margin-top: 1.5rem; width: 100%;">SIMPAN & TERAPKAN TAKTIK</button>
-                        </div>
-                    </div>
-
                     <!-- TAB 4: TRANSFER MARKET -->
                     <div id="tab-fm-market" class="fm-tab-content hidden">
                         <div class="fm-card">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                                <h3 style="color: var(--neon-cyan);">💼 BURSA TRANSFER GLOBAL (SCOUTING HUB)</h3>
-                            </div>
+                            <h3 style="color: var(--neon-cyan); margin-bottom: 1.2rem;">💼 BURSA TRANSFER GLOBAL (SCOUTING HUB)</h3>
                             <div id="fm-market-list" class="market-grid"></div>
                         </div>
                     </div>
@@ -269,7 +300,43 @@
         </div>
 
         <!-- ========================================================
-             4. TRANSFER NEGOTIATION MODAL
+             4. LIVE MATCHDAY SIMULATION SCREEN (FM27 ENGINE)
+             ======================================================== -->
+        <div id="screen-fm-live-match" class="ui-screen hidden">
+            <div class="summary-container" style="padding: 1.5rem;">
+                <div class="summary-card" style="width: 850px; text-align: left;">
+                    <!-- Match Scoreboard Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--neon-volt); font-weight: 800;">LIVE MATCH ENGINE FM 27</div>
+                            <h3 id="live-match-clock" style="font-size: 1.8rem; color: #fff;">00:00</h3>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1.5rem; font-size: 1.8rem; font-weight: 900;">
+                            <span id="live-name-home">Home</span>
+                            <span style="color: var(--neon-volt);"><span id="live-score-home">0</span> - <span id="live-score-away">0</span></span>
+                            <span id="live-name-away">Away</span>
+                        </div>
+                    </div>
+
+                    <!-- Tactical Shouts Bar -->
+                    <div style="display: flex; gap: 0.8rem; margin-bottom: 1.5rem; background: rgba(255,255,255,0.03); padding: 0.8rem; border-radius: 8px;">
+                        <span style="font-size: 0.9rem; font-weight: 700; color: var(--neon-cyan); align-self: center;">Instruksi Manajer (Shouts):</span>
+                        <button id="btn-shout-more" class="nav-tag-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📢 Tingkatkan Tekanan (Demand More)</button>
+                        <button id="btn-shout-praise" class="nav-tag-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">👏 Beri Pujian (Praise)</button>
+                        <button id="btn-shout-focus" class="nav-tag-btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">🎯 Jaga Fokus (Focus)</button>
+                    </div>
+
+                    <!-- Live Commentary Feed -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Teks Komentar Pertandingan & Peluang:</h4>
+                        <div id="live-commentary-feed" class="live-commentary-box"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             5. TRANSFER NEGOTIATION MODAL
              ======================================================== -->
         <div id="modal-fm-transfer" class="ui-modal hidden">
             <div class="summary-card" style="width: 520px;">
@@ -302,7 +369,7 @@
         </div>
 
         <!-- ========================================================
-             5. TEAM SELECTION (FOR KICK OFF)
+             6. TEAM SELECTION (FOR KICK OFF)
              ======================================================== -->
         <div id="screen-team-select" class="ui-screen hidden">
             <div class="team-select-container">
@@ -333,7 +400,7 @@
         </div>
 
         <!-- ========================================================
-             6. TACTICS & SQUAD ROSTER SCREEN (KICK OFF)
+             7. TACTICS & SQUAD ROSTER SCREEN (KICK OFF)
              ======================================================== -->
         <div id="screen-tactics" class="ui-screen hidden">
             <div class="tactics-container">
@@ -354,7 +421,7 @@
         </div>
 
         <!-- ========================================================
-             7. TOURNAMENT BRACKET SCREEN
+             8. TOURNAMENT BRACKET SCREEN
              ======================================================== -->
         <div id="screen-tournament" class="ui-screen hidden">
             <div class="tournament-container">
@@ -372,7 +439,7 @@
         </div>
 
         <!-- ========================================================
-             8. CONTROLS & SETTINGS SCREEN
+             9. CONTROLS & SETTINGS SCREEN
              ======================================================== -->
         <div id="screen-settings" class="ui-screen hidden">
             <div class="tactics-container">
@@ -411,10 +478,9 @@
         </div>
 
         <!-- ========================================================
-             9. IN-GAME HUD OVERLAY
+             10. IN-GAME HUD OVERLAY
              ======================================================== -->
         <div id="screen-hud" class="ui-screen hidden">
-            <!-- Top Scoreboard Banner -->
             <div class="hud-scoreboard-banner">
                 <div class="team-score-slot home">
                     <span id="hud-name-home" class="team-abbr">RMA</span>
@@ -428,7 +494,6 @@
                 <button id="btn-hud-pause" class="hud-pause-btn" title="Pause Game">⏸</button>
             </div>
 
-            <!-- Active Player Card -->
             <div class="hud-bottom-player">
                 <div class="hud-player-row">
                     <span id="hud-player-name">Mbappé</span>
@@ -439,26 +504,21 @@
                 </div>
             </div>
 
-            <!-- Shoot / Lob Power Meter -->
             <div id="hud-power-bar" class="hud-power-bar hidden">
                 <div id="hud-power-fill" class="hud-power-fill"></div>
             </div>
 
-            <!-- Mini Radar Center Pitch Map -->
             <div class="hud-radar-container">
                 <canvas id="radar-canvas" width="220" height="142"></canvas>
             </div>
 
-            <!-- Goal Popup Banner -->
             <div id="hud-goal-banner" class="hud-goal-banner hidden">
                 <div class="goal-giant-text">GOAL!</div>
                 <div id="hud-goal-scorer" class="goal-scorer-tag">Scored by Mbappé</div>
             </div>
 
-            <!-- Instant Replay Tag -->
             <div id="hud-replay-tag" class="hud-replay-tag hidden">● REPLAY</div>
 
-            <!-- Mobile Touch Virtual Joystick & Buttons Cluster -->
             <div class="touch-controls-container">
                 <div id="touch-joystick-base" class="touch-joystick-base">
                     <div id="touch-joystick-thumb" class="touch-joystick-thumb"></div>
@@ -477,7 +537,7 @@
         </div>
 
         <!-- ========================================================
-             10. PAUSE MODAL
+             11. PAUSE MODAL
              ======================================================== -->
         <div id="modal-pause" class="ui-modal hidden">
             <div class="summary-card" style="width: 420px;">
@@ -491,7 +551,7 @@
         </div>
 
         <!-- ========================================================
-             11. MATCH SUMMARY STATS SCREEN
+             12. MATCH SUMMARY STATS SCREEN
              ======================================================== -->
         <div id="screen-match-summary" class="ui-screen hidden">
             <div class="summary-container">

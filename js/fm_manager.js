@@ -1,5 +1,6 @@
 /**
  * EA FC 27 x FM 27 - Football Manager Career Mode Core Engine
+ * Complete Lineup & Substitution Management, Tactical Instructions, Live Match Simulation
  */
 
 import { GLOBAL_CLUBS, GLOBAL_LEAGUES } from './database.js';
@@ -24,18 +25,27 @@ export class FootballManagerEngine {
         this.boardConfidence = 85; // 0 to 100
         this.fanConfidence = 88;
 
-        // Active Tactical Preset
+        // In-depth FM Tactics Object
         this.tactics = {
             formation: '4-3-3',
             style: 'Gegenpress',
             mentality: 'Attacking', // Very Defensive, Balanced, Attacking, Overload
             tempo: 'High',
-            passing: 'Direct',
-            defensiveLine: 'High'
+            passing: 'Shorter',
+            width: 'Fairly Wide',
+            defensiveLine: 'High',
+            pressingIntensity: 'Much More Often',
+            tackleAggression: 'Get Stuck In',
+            timeWasting: 'Never',
+            counterPress: true,
+            counterAttack: true
         };
 
         // Transfer Market State
         this.transferHistory = [];
+
+        // In-Match Live Simulation State
+        this.liveMatch = null;
     }
 
     startNewCareer(clubId) {
@@ -47,7 +57,7 @@ export class FootballManagerEngine {
         this.userLeagueId = foundClub.leagueId;
         this.currentMatchday = 1;
         this.boardConfidence = 85;
-        this.fanConfidence = 85;
+        this.fanConfidence = 88;
 
         // Initialize League Table for all clubs in this league
         this.initLeagueSeason();
@@ -58,20 +68,63 @@ export class FootballManagerEngine {
                 id: 1,
                 date: '17 August 2026',
                 sender: 'Board of Directors',
-                title: `Welcome to ${this.userClub.name}!`,
-                body: `The board and fans are delighted to appoint you as the new Manager of ${this.userClub.name}. Our objective this season is to fight for silverware and manage our €${(this.userClub.transferBudget / 1000000).toFixed(1)}M transfer budget wisely.`
+                title: `Selamat Datang di ${this.userClub.name}!`,
+                body: `Dewan Direksi dan pendukung menyambut Anda sebagai Manajer baru ${this.userClub.name}. Target musim ini adalah bersaing memperebutkan gelar dan mengelola anggaran transfer €${(this.userClub.transferBudget / 1000000).toFixed(1)}M secara efektif.`
             },
             {
                 id: 2,
                 date: '17 August 2026',
-                sender: 'Head of Scouting',
-                title: 'Transfer Window is OPEN!',
-                body: 'The summer transfer window is currently active. Scout global talents in the Transfer Market hub to bolster our squad before Matchday 1.'
+                sender: 'Kepala Pelatih Fisik & Taktik',
+                title: 'Skuad Siap untuk Musim Baru!',
+                body: 'Susunan pemain Starting XI dan pemain cadangan (Bench) telah siap. Buka menu Taktik & Skuad untuk mengatur pergantian pemain (Substitution) dan gaya permainan tim.'
             }
         ];
 
         this.saveCareer();
         return true;
+    }
+
+    // Get Starting XI (11 players)
+    getStartingXI() {
+        if (!this.userClub) return [];
+        return this.userClub.players.filter(p => p.isStarting);
+    }
+
+    // Get Bench Substitutes
+    getBenchPlayers() {
+        if (!this.userClub) return [];
+        return this.userClub.players.filter(p => !p.isStarting);
+    }
+
+    // Make Player Substitution (Swap Starting XI with Bench)
+    substitutePlayer(startingPlayerId, benchPlayerId) {
+        if (!this.userClub) return { success: false, message: 'Klub tidak ditemukan!' };
+
+        const startIdx = this.userClub.players.findIndex(p => p.id === startingPlayerId);
+        const benchIdx = this.userClub.players.findIndex(p => p.id === benchPlayerId);
+
+        if (startIdx === -1 || benchIdx === -1) {
+            return { success: false, message: 'Pemain tidak ditemukan dalam daftar!' };
+        }
+
+        const outPlayer = this.userClub.players[startIdx];
+        const inPlayer = this.userClub.players[benchIdx];
+
+        // Swap isStarting status
+        outPlayer.isStarting = false;
+        inPlayer.isStarting = true;
+
+        // Preserve tactical role position for inPlayer
+        const tempRole = inPlayer.role;
+        inPlayer.currentTacticalRole = outPlayer.role;
+
+        this.saveCareer();
+        return {
+            success: true,
+            message: `🔄 Pergantian Pemain: ${inPlayer.name} (IN) menggantikan ${outPlayer.name} (OUT)!`,
+            outPlayer,
+            inPlayer
+        };
     }
 
     initLeagueSeason() {
@@ -99,7 +152,6 @@ export class FootballManagerEngine {
         const n = leagueClubs.length;
         for (let round = 1; round <= (n - 1) * 2; round++) {
             const matchdayMatches = [];
-            // Round robin pairing
             for (let i = 0; i < Math.floor(n / 2); i++) {
                 const home = leagueClubs[(round + i) % n];
                 const away = leagueClubs[(round + n - 1 - i) % n];
@@ -135,6 +187,98 @@ export class FootballManagerEngine {
         };
     }
 
+    // Start Live FM Simulation Engine
+    startLiveMatchSimulation(onTick, onEvent, onFinished) {
+        const userMatchInfo = this.getCurrentUserMatch();
+        if (!userMatchInfo) return null;
+
+        const { homeClub, awayClub, isUserHome } = userMatchInfo;
+
+        this.liveMatch = {
+            minute: 0,
+            homeClub,
+            awayClub,
+            homeScore: 0,
+            awayScore: 0,
+            events: [],
+            subsRemaining: 5,
+            commentary: 'Peluit babak pertama dibunyikan! Pertandingan resmi dimulai.',
+            isPaused: false,
+            intervalId: null
+        };
+
+        const intervalId = setInterval(() => {
+            if (!this.liveMatch || this.liveMatch.isPaused) return;
+
+            this.liveMatch.minute += 2;
+            const min = this.liveMatch.minute;
+
+            // Rating calculations
+            const userBonus = (this.tactics.mentality === 'Attacking' ? 2 : this.tactics.mentality === 'Overload' ? 4 : 0);
+            const homePower = homeClub.rating + (isUserHome ? userBonus : 0) + Math.random() * 8;
+            const awayPower = awayClub.rating + (!isUserHome ? userBonus : 0) + Math.random() * 8;
+
+            // Goal chance check
+            if (Math.random() < 0.08) {
+                if (homePower > awayPower + 2) {
+                    this.liveMatch.homeScore++;
+                    const scorer = homeClub.players[Math.floor(Math.random() * Math.min(11, homeClub.players.length))]?.name || 'Striker';
+                    const ev = { min, type: 'GOAL', text: `⚽ GOOOL! (${min}') ${homeClub.name}! Dicetak oleh ${scorer}.` };
+                    this.liveMatch.events.unshift(ev);
+                    this.liveMatch.commentary = ev.text;
+                    if (onEvent) onEvent(ev);
+                } else if (awayPower > homePower + 2) {
+                    this.liveMatch.awayScore++;
+                    const scorer = awayClub.players[Math.floor(Math.random() * Math.min(11, awayClub.players.length))]?.name || 'Striker';
+                    const ev = { min, type: 'GOAL', text: `⚽ GOOOL! (${min}') ${awayClub.name}! Dicetak oleh ${scorer}.` };
+                    this.liveMatch.events.unshift(ev);
+                    this.liveMatch.commentary = ev.text;
+                    if (onEvent) onEvent(ev);
+                }
+            }
+
+            // Key Chance / Yellow card check
+            if (Math.random() < 0.05) {
+                const team = Math.random() > 0.5 ? homeClub : awayClub;
+                const p = team.players[Math.floor(Math.random() * Math.min(11, team.players.length))]?.name || 'Pemain';
+                const ev = { min, type: 'CARD', text: `🟨 Kartu Kuning (${min}') untuk ${p} (${team.shortName}) setelah pelanggaran keras.` };
+                this.liveMatch.events.unshift(ev);
+                this.liveMatch.commentary = ev.text;
+                if (onEvent) onEvent(ev);
+            }
+
+            if (onTick) onTick(this.liveMatch);
+
+            // Full-time 90 mins
+            if (min >= 90) {
+                clearInterval(intervalId);
+                this.simulateMatchday(this.liveMatch.homeScore, this.liveMatch.awayScore);
+                if (onFinished) onFinished(this.liveMatch);
+            }
+        }, 300);
+
+        this.liveMatch.intervalId = intervalId;
+        return this.liveMatch;
+    }
+
+    applyTacticalShout(shoutType) {
+        if (!this.liveMatch) return 'Tidak ada laga aktif.';
+        const min = this.liveMatch.minute;
+        let response = '';
+
+        if (shoutType === 'DEMAND_MORE') {
+            response = `📢 Manajer berteriak: "Tingkatkan Tekanan & Bekerja Lebih Keras!" (Moral Skuad Meningkat)`;
+        } else if (shoutType === 'PRAISE') {
+            response = `👏 Manajer memberikan pujian: "Kerja Bagus, Pertahankan Dominasi!"`;
+        } else if (shoutType === 'FOCUS') {
+            response = `🎯 Manajer menginstruksikan: "Fokus & Jangan Buat Kesalahan!" (Konsentrasi Bertahan Naik)`;
+        }
+
+        this.liveMatch.events.unshift({ min, type: 'SHOUT', text: response });
+        this.liveMatch.commentary = response;
+        return response;
+    }
+
     simulateMatchday(userScoreHome = null, userScoreAway = null) {
         const mdObj = this.fixtures.find(f => f.matchday === this.currentMatchday);
         if (!mdObj) return;
@@ -146,11 +290,9 @@ export class FootballManagerEngine {
             const awayClub = (match.awayId === this.userClub.id) ? this.userClub : GLOBAL_CLUBS.find(c => c.id === match.awayId) || { rating: 80 };
 
             if ((match.homeId === this.userClub.id || match.awayId === this.userClub.id) && userScoreHome !== null && userScoreAway !== null) {
-                // User played or custom result
                 match.homeScore = userScoreHome;
                 match.awayScore = userScoreAway;
             } else {
-                // AI Simulation based on team rating + home advantage
                 const ratingDiff = (homeClub.rating + 3) - awayClub.rating;
                 const homeBaseGoals = Math.max(0, Math.round(Math.random() * 2 + (ratingDiff > 0 ? 1 : 0) + Math.random() * 1.5));
                 const awayBaseGoals = Math.max(0, Math.round(Math.random() * 2 - (ratingDiff > 5 ? 1 : 0) + Math.random() * 1.2));
@@ -161,7 +303,6 @@ export class FootballManagerEngine {
 
             match.played = true;
 
-            // Update Standings table
             this.updateStandingsRecord(match.homeId, match.homeScore, match.awayScore);
             this.updateStandingsRecord(match.awayId, match.awayScore, match.homeScore);
         });
@@ -169,19 +310,13 @@ export class FootballManagerEngine {
         // Weekly Finances: Ticket revenue on Home games & Weekly Wage deduction
         const userMatch = mdObj.matches.find(m => m.homeId === this.userClub.id || m.awayId === this.userClub.id);
         if (userMatch) {
-            let weeklyNet = 0;
             if (userMatch.homeId === this.userClub.id) {
-                // Ticket Gate Receipt
                 const ticketRevenue = 1500000 + Math.floor(Math.random() * 800000);
                 this.userClub.transferBudget += ticketRevenue;
-                weeklyNet += ticketRevenue;
             }
-            // Deduct weekly squad wages
             const totalWages = this.userClub.players.reduce((sum, p) => sum + (p.wage || 50000), 0);
             this.userClub.transferBudget -= totalWages;
-            weeklyNet -= totalWages;
 
-            // Board confidence adjustments
             const isUserHome = userMatch.homeId === this.userClub.id;
             const userGoals = isUserHome ? userMatch.homeScore : userMatch.awayScore;
             const oppGoals = isUserHome ? userMatch.awayScore : userMatch.homeScore;
@@ -195,7 +330,6 @@ export class FootballManagerEngine {
             }
         }
 
-        // Advance Matchday
         this.currentMatchday++;
         this.sortStandings();
         this.saveCareer();
@@ -234,13 +368,11 @@ export class FootballManagerEngine {
         });
     }
 
-    // Transfer Market: Buy Player
     buyPlayer(player, offerFee, offerWage) {
         if (!this.userClub || this.userClub.transferBudget < offerFee) {
-            return { success: false, message: 'Anggaran transfer tidak mencukupi!' };
+            return { success: false, message: 'Anggaran transfer klub tidak mencukupi!' };
         }
 
-        // Transfer negotiation acceptance algorithm
         const minAcceptableFee = player.val * 0.95;
         const minAcceptableWage = player.wage * 1.05;
 
@@ -258,9 +390,8 @@ export class FootballManagerEngine {
             };
         }
 
-        // Deal Accepted!
         this.userClub.transferBudget -= offerFee;
-        const newPlayer = { ...player, wage: offerWage };
+        const newPlayer = { ...player, isStarting: false, wage: offerWage, fitness: 100, morale: 'Superb' };
         this.userClub.players.push(newPlayer);
 
         this.transferHistory.unshift({
@@ -273,17 +404,16 @@ export class FootballManagerEngine {
 
         this.inbox.unshift({
             id: Date.now(),
-            date: `Matchday ${this.currentMatchday}`,
-            sender: 'Transfer Headquarters',
-            title: `OFFICIAL: ${player.name} signs for ${this.userClub.name}!`,
-            body: `Congratulations! ${player.name} has completed his medical and signed a contract with ${this.userClub.name} for €${(offerFee/1000000).toFixed(1)}M.`
+            date: `Pekan ${this.currentMatchday}`,
+            sender: 'Departemen Transfer',
+            title: `RESMI: ${player.name} bergabung dengan ${this.userClub.name}!`,
+            body: `${player.name} telah menandatangani kontrak resmi setelah transfer senilai €${(offerFee/1000000).toFixed(1)}M disetujui.`
         });
 
         this.saveCareer();
-        return { success: true, message: `Sukses merekrut ${player.name}!` };
+        return { success: true, message: `Sukses merekrut ${player.name} ke skuad!` };
     }
 
-    // Transfer Market: Sell Player
     sellPlayer(playerId) {
         const pIndex = this.userClub.players.findIndex(p => p.id === playerId);
         if (pIndex === -1) return { success: false, message: 'Pemain tidak ditemukan di skuad!' };
@@ -303,10 +433,10 @@ export class FootballManagerEngine {
 
         this.inbox.unshift({
             id: Date.now(),
-            date: `Matchday ${this.currentMatchday}`,
-            sender: 'Transfer Headquarters',
-            title: `TRANSFER: ${player.name} sold!`,
-            body: `${player.name} has departed ${this.userClub.name} for an agreed transfer fee of €${(soldFee/1000000).toFixed(1)}M.`
+            date: `Pekan ${this.currentMatchday}`,
+            sender: 'Departemen Transfer',
+            title: `TRANSFER: ${player.name} dilepas!`,
+            body: `${player.name} telah meninggalkan klub dengan nilai penjualan sebesar €${(soldFee/1000000).toFixed(1)}M.`
         });
 
         this.saveCareer();
