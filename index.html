@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EA SPORTS FC 27 Web Edition - Game Sepak Bola 3D</title>
-    <meta name="description" content="Mainkan game sepak bola 3D EA FC 27 langsung di browser web. Grafis 3D memukau, klub top dunia, kontrol akurat, dan fitur gameplay realistis.">
+    <title>EA SPORTS FC 27 x FOOTBALL MANAGER 27 - Web Edition</title>
+    <meta name="description" content="Mainkan game sepak bola 3D EA FC 27 & Football Manager 27 langsung di browser web. Fitur karir manajer lengkap, bursa transfer, liga dunia, dan gameplay 3D realistis.">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
     
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -23,14 +23,14 @@
         <div id="game-container"></div>
 
         <!-- ========================================================
-             1. MAIN MENU SCREEN
+             1. MAIN MENU SCREEN (EA FC 27 x FM 27)
              ======================================================== -->
         <div id="screen-main-menu" class="ui-screen">
             <div class="main-menu-container">
                 <header class="menu-header">
                     <div class="brand-logo">
                         <span class="brand-fc">FC 27</span>
-                        <span class="brand-edition">Web Edition</span>
+                        <span class="brand-edition">Manager & Match Edition</span>
                     </div>
                     <div class="menu-nav-links">
                         <button id="btn-toggle-audio" class="nav-tag-btn">🔊 Audio: ON</button>
@@ -39,12 +39,19 @@
                     </div>
                 </header>
 
-                <main class="menu-grid">
+                <main class="menu-grid" style="grid-template-columns: repeat(4, 1fr);">
+                    <!-- FM 27 Career Mode Tile -->
+                    <div id="btn-mode-fm-career" class="menu-tile-card" style="border-color: var(--neon-volt); background: linear-gradient(135deg, rgba(0,245,155,0.15) 0%, rgba(18,26,47,0.9) 100%);">
+                        <div class="tile-icon">👔</div>
+                        <h2 class="tile-title" style="color: var(--neon-volt);">FM 27 CAREER</h2>
+                        <p class="tile-desc">Mode Manajer Mendalam: Bursa transfer, negosiasi gaji, finansial klub, taktik, & liga dunia lengkap.</p>
+                    </div>
+
                     <!-- Kick Off Tile -->
                     <div id="btn-mode-kickoff" class="menu-tile-card">
                         <div class="tile-icon">⚽</div>
-                        <h2 class="tile-title">KICK OFF</h2>
-                        <p class="tile-desc">Pertandingan cepat 11v11 dengan tim-tim terbaik dunia dan timnas.</p>
+                        <h2 class="tile-title">KICK OFF 3D</h2>
+                        <p class="tile-desc">Pertandingan cepat 11v11 dengan klub & timnas top dunia dalam engine 3D.</p>
                     </div>
 
                     <!-- Champions Tournament Tile -->
@@ -54,46 +61,261 @@
                         <p class="tile-desc">Turnamen fase gugur Champions Cup untuk memperebutkan trofi bergengsi.</p>
                     </div>
 
-                    <!-- Squad & Tactics Tile -->
-                    <div id="btn-mode-squad" class="menu-tile-card" onclick="document.getElementById('btn-mode-tactics').click()">
-                        <div class="tile-icon">🎴</div>
-                        <h2 class="tile-title">ULTIMATE TEAM</h2>
-                        <p class="tile-desc">Lihat rating pemain, formasi strategi, dan susunan statistik pemain.</p>
-                    </div>
-
                     <!-- Controls & Settings Tile -->
                     <div id="btn-mode-guide" class="menu-tile-card" onclick="document.getElementById('btn-mode-settings').click()">
                         <div class="tile-icon">🎮</div>
-                        <h2 class="tile-title">CONTROLS GUIDE</h2>
+                        <h2 class="tile-title">KONTROL</h2>
                         <p class="tile-desc">Panduan tombol Keyboard, Gamepad Stik, dan Layar Sentuh Smartphone.</p>
                     </div>
                 </main>
 
                 <footer class="menu-footer">
-                    <div>EA SPORTS FC 27 Web Engine • Powered by Three.js & Web Audio API</div>
+                    <div>EA SPORTS FC 27 x FOOTBALL MANAGER 27 • Web Audio API & Three.js</div>
                     <div>Press <b>X / J</b> to Pass • <b>D / K</b> to Shoot • <b>Shift</b> to Sprint</div>
                 </footer>
             </div>
         </div>
 
         <!-- ========================================================
-             2. TEAM SELECTION SCREEN
+             2. FM 27 NEW CAREER CLUB SELECTION
+             ======================================================== -->
+        <div id="screen-fm-new-career" class="ui-screen hidden">
+            <div class="team-select-container">
+                <header class="screen-header-bar">
+                    <div>
+                        <h2 class="screen-title">PILIH KLUB KARIR MANAJER (FM 27)</h2>
+                        <p style="color: var(--text-secondary);">Pilih klub impian Anda di Premier League, La Liga, BRI Liga 1, atau Tim Nasional</p>
+                    </div>
+                    <button class="nav-tag-btn btn-back-menu">◀ Kembali ke Menu</button>
+                </header>
+
+                <div id="fm-new-career-club-list" class="teams-scroll-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; max-height: 480px;"></div>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             3. FM 27 MANAGER DASHBOARD (MAIN HUB)
+             ======================================================== -->
+        <div id="screen-fm-dashboard" class="ui-screen hidden">
+            <div class="fm-hub-container">
+                <!-- Top Manager Navigation Bar -->
+                <div class="fm-topbar">
+                    <div class="fm-club-brand">
+                        <span id="fm-club-badge" class="fm-badge-icon">👑</span>
+                        <div>
+                            <h3 id="fm-club-name">Real Madrid</h3>
+                            <div class="fm-sub-meta">
+                                <span>Budget: <strong id="fm-budget-display" style="color: var(--neon-volt);">€180M</strong></span> • 
+                                <span id="fm-matchday-display">Pekan ke-1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fm-nav-tabs">
+                        <button class="fm-tab-btn active" data-tab="tab-fm-overview">📊 Dashboard</button>
+                        <button class="fm-tab-btn" data-tab="tab-fm-squad">👥 Skuad</button>
+                        <button class="fm-tab-btn" data-tab="tab-fm-tactics">📋 Taktik FM</button>
+                        <button class="fm-tab-btn" data-tab="tab-fm-market">💼 Bursa Transfer</button>
+                        <button class="fm-tab-btn" data-tab="tab-fm-standings">🏆 Klasemen</button>
+                        <button class="fm-tab-btn" data-tab="tab-fm-inbox">📬 Kotak Masuk</button>
+                    </div>
+
+                    <button class="nav-tag-btn btn-back-menu" style="font-size: 0.85rem;">🚪 Keluar</button>
+                </div>
+
+                <!-- FM Main Content Area -->
+                <div class="fm-content-viewport">
+                    <!-- TAB 1: OVERVIEW & NEXT MATCH -->
+                    <div id="tab-fm-overview" class="fm-tab-content">
+                        <div class="fm-dashboard-grid">
+                            <!-- Next Matchday Card -->
+                            <div class="fm-card next-match-box">
+                                <h3 style="color: var(--neon-cyan); margin-bottom: 1rem;">⚽ PERTANDINGAN BERIKUTNYA</h3>
+                                <div id="fm-next-match-card" class="next-match-body"></div>
+                                <div class="fm-match-actions">
+                                    <button id="btn-fm-play-3d" class="btn-primary-fc" style="padding: 0.8rem 1.8rem;">🎮 MAINKAN DI LAPANGAN (3D)</button>
+                                    <button id="btn-fm-quick-sim" class="nav-tag-btn" style="padding: 0.8rem 1.8rem;">⚡ SIMULASI CEPAT (FM ENGINE)</button>
+                                </div>
+                            </div>
+
+                            <!-- Board & Confidence -->
+                            <div class="fm-card">
+                                <h3 style="color: var(--neon-gold); margin-bottom: 1rem;">🎯 EVALUASI DEWAN DIREKSI</h3>
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div>
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                                            <span>Kepuasan Dewan (Board)</span>
+                                            <strong id="fm-board-conf" style="color: var(--neon-volt);">85%</strong>
+                                        </div>
+                                        <div class="hud-stamina-bar"><div class="hud-stamina-fill" style="width: 85%;"></div></div>
+                                    </div>
+                                    <div>
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                                            <span>Dukungan Suporter (Fans)</span>
+                                            <strong id="fm-fan-conf" style="color: var(--neon-cyan);">88%</strong>
+                                        </div>
+                                        <div class="hud-stamina-bar"><div class="hud-stamina-fill" style="width: 88%; background: var(--neon-cyan);"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: SQUAD LIST -->
+                    <div id="tab-fm-squad" class="fm-tab-content hidden">
+                        <div class="fm-card">
+                            <h3 style="margin-bottom: 1rem; color: var(--neon-cyan);">DAFTAR PEMAIN & KONTRAK SKUAD</h3>
+                            <div style="overflow-x: auto;">
+                                <table class="fm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Pos</th>
+                                            <th>Nama Pemain</th>
+                                            <th>Usia</th>
+                                            <th>OVR</th>
+                                            <th>Nilai Pasar</th>
+                                            <th>Gaji Mingguan</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fm-squad-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: TACTICS & INSTRUCTIONS -->
+                    <div id="tab-fm-tactics" class="fm-tab-content hidden">
+                        <div class="fm-card" style="max-width: 800px; margin: 0 auto;">
+                            <h3 style="margin-bottom: 1.5rem; color: var(--neon-volt);">PENGATURAN TAKTIK MENDALAM (FM 27)</h3>
+                            <div class="tactics-form-grid">
+                                <div class="form-group">
+                                    <label>Gaya Taktik Utama:</label>
+                                    <select id="tactics-style-select" class="fm-select">
+                                        <option value="Gegenpress">Gegenpress (High Pressing & Fast Transition)</option>
+                                        <option value="Tiki-Taka">Tiki-Taka (Possession & Short Passing)</option>
+                                        <option value="Direct Counter-Attack">Direct Counter-Attack</option>
+                                        <option value="Fluid Attacking">Fluid Attacking</option>
+                                        <option value="Catenaccio">Catenaccio (Solid Defense & Low Block)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Mentalitas Tim:</label>
+                                    <select id="tactics-mentality-select" class="fm-select">
+                                        <option value="Very Defensive">Sangat Bertahan (Park the Bus)</option>
+                                        <option value="Balanced">Seimbang (Balanced)</option>
+                                        <option value="Attacking">Menyerang (Attacking)</option>
+                                        <option value="Overload">Overload Attack (All Out)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tempo Permainan:</label>
+                                    <select id="tactics-tempo-select" class="fm-select">
+                                        <option value="Low">Rendah / Sabar (Patient Build-up)</option>
+                                        <option value="Standard">Standar</option>
+                                        <option value="High">Tinggi / Cepat (High Tempo)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button id="btn-save-tactics" class="btn-primary-fc" style="margin-top: 1.5rem; width: 100%;">SIMPAN & TERAPKAN TAKTIK</button>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: TRANSFER MARKET -->
+                    <div id="tab-fm-market" class="fm-tab-content hidden">
+                        <div class="fm-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                <h3 style="color: var(--neon-cyan);">💼 BURSA TRANSFER GLOBAL (SCOUTING HUB)</h3>
+                            </div>
+                            <div id="fm-market-list" class="market-grid"></div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: LEAGUE STANDINGS -->
+                    <div id="tab-fm-standings" class="fm-tab-content hidden">
+                        <div class="fm-card">
+                            <h3 style="margin-bottom: 1.2rem; color: var(--neon-gold);">KLASEMEN RESMI LIGA</h3>
+                            <div style="overflow-x: auto;">
+                                <table class="fm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Pos</th>
+                                            <th>Klub</th>
+                                            <th>Main</th>
+                                            <th>M</th>
+                                            <th>S</th>
+                                            <th>K</th>
+                                            <th>Gol</th>
+                                            <th>SG</th>
+                                            <th>Poin</th>
+                                            <th>Form</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fm-standings-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 6: INBOX -->
+                    <div id="tab-fm-inbox" class="fm-tab-content hidden">
+                        <div class="fm-card">
+                            <h3 style="margin-bottom: 1rem; color: var(--neon-cyan);">📬 KOTAK MASUK & BERITA KLUB</h3>
+                            <div id="fm-inbox-list" class="inbox-container-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             4. TRANSFER NEGOTIATION MODAL
+             ======================================================== -->
+        <div id="modal-fm-transfer" class="ui-modal hidden">
+            <div class="summary-card" style="width: 520px;">
+                <h3 style="color: var(--neon-volt); font-size: 1.8rem; margin-bottom: 0.5rem;">NEGOSIASI TRANSFER PEMAIN</h3>
+                <h4 id="nego-player-name" style="font-size: 1.4rem;">Player Name</h4>
+                <p id="nego-player-meta" style="color: var(--text-secondary); margin-bottom: 1.5rem;">Position • OVR</p>
+
+                <div style="display: flex; flex-direction: column; gap: 1rem; text-align: left;">
+                    <div>
+                        <label style="font-size: 0.9rem; color: var(--text-secondary);">Nilai Pasar Pemain:</label>
+                        <div id="nego-market-val" style="font-size: 1.2rem; font-weight: 700; color: #ffffff;">€50.0M</div>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.9rem; color: var(--text-secondary);">Tawaran Biaya Transfer (€):</label>
+                        <input type="number" id="nego-fee-input" class="fm-input" step="1000000">
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.9rem; color: var(--text-secondary);">Tawaran Gaji Mingguan Pemain (€/week):</label>
+                        <input type="number" id="nego-wage-input" class="fm-input" step="5000">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button id="btn-nego-submit" class="btn-primary-fc" style="flex: 1; padding: 0.8rem;">KIRIM TAWARAN</button>
+                    <button id="btn-nego-cancel" class="nav-tag-btn" style="flex: 1; padding: 0.8rem; border-color: #ef4444; color: #ef4444;">BATAL</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             5. TEAM SELECTION (FOR KICK OFF)
              ======================================================== -->
         <div id="screen-team-select" class="ui-screen hidden">
             <div class="team-select-container">
                 <header class="screen-header-bar">
-                    <h2 class="screen-title">PILIH TIM & PERTANDINGAN</h2>
+                    <h2 class="screen-title">PILIH TIM & PERTANDINGAN (KICK OFF)</h2>
                     <button class="nav-tag-btn btn-back-menu">◀ Kembali ke Menu</button>
                 </header>
 
                 <div class="team-picker-grid">
-                    <!-- Home Team Column -->
                     <div class="picker-side">
                         <h3>TIM ANDA (HOME)</h3>
                         <div id="home-team-list" class="teams-scroll-list"></div>
                     </div>
-
-                    <!-- Away Team Column -->
                     <div class="picker-side">
                         <h3>TIM LAWAN (AWAY)</h3>
                         <div id="away-team-list" class="teams-scroll-list"></div>
@@ -111,7 +333,7 @@
         </div>
 
         <!-- ========================================================
-             3. TACTICS & SQUAD ROSTER SCREEN
+             6. TACTICS & SQUAD ROSTER SCREEN (KICK OFF)
              ======================================================== -->
         <div id="screen-tactics" class="ui-screen hidden">
             <div class="tactics-container">
@@ -132,7 +354,7 @@
         </div>
 
         <!-- ========================================================
-             4. TOURNAMENT BRACKET SCREEN
+             7. TOURNAMENT BRACKET SCREEN
              ======================================================== -->
         <div id="screen-tournament" class="ui-screen hidden">
             <div class="tournament-container">
@@ -150,7 +372,7 @@
         </div>
 
         <!-- ========================================================
-             5. CONTROLS & SETTINGS SCREEN
+             8. CONTROLS & SETTINGS SCREEN
              ======================================================== -->
         <div id="screen-settings" class="ui-screen hidden">
             <div class="tactics-container">
@@ -189,7 +411,7 @@
         </div>
 
         <!-- ========================================================
-             6. IN-GAME HUD OVERLAY
+             9. IN-GAME HUD OVERLAY
              ======================================================== -->
         <div id="screen-hud" class="ui-screen hidden">
             <!-- Top Scoreboard Banner -->
@@ -255,7 +477,7 @@
         </div>
 
         <!-- ========================================================
-             7. PAUSE MODAL
+             10. PAUSE MODAL
              ======================================================== -->
         <div id="modal-pause" class="ui-modal hidden">
             <div class="summary-card" style="width: 420px;">
@@ -269,7 +491,7 @@
         </div>
 
         <!-- ========================================================
-             8. MATCH SUMMARY STATS SCREEN
+             11. MATCH SUMMARY STATS SCREEN
              ======================================================== -->
         <div id="screen-match-summary" class="ui-screen hidden">
             <div class="summary-container">

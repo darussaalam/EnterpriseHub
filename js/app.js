@@ -1,8 +1,9 @@
 /**
- * EA FC 27 Web Edition - Main Game Application Bootstrap & Loop
+ * EA FC 27 x FM 27 Web Edition - Main Game Application Bootstrap & Loop
  */
 
-import { GAME_CONFIG, FORMATIONS, TEAMS_DATABASE } from './config.js';
+import { GAME_CONFIG, FORMATIONS } from './config.js';
+import { GLOBAL_CLUBS } from './database.js';
 import { Engine3D } from './engine3d.js';
 import { Ball } from './physics.js';
 import { Player } from './player.js';
@@ -10,6 +11,8 @@ import { AIEngine } from './ai.js';
 import { ControlsManager } from './controls.js';
 import { Match } from './match.js';
 import { UIManager } from './ui.js';
+import { FMUIManager } from './ui_fm.js';
+import { fmEngine } from './fm_manager.js';
 import { soundEngine } from './audio.js';
 
 class GameApp {
@@ -26,6 +29,7 @@ class GameApp {
         this.ai = null;
         this.match = null;
         this.ui = null;
+        this.fmUI = null;
 
         this.lastTime = 0;
         this.isMatchRunning = false;
@@ -44,6 +48,7 @@ class GameApp {
         this.ai = new AIEngine('MEDIUM');
         this.controls = new ControlsManager();
         this.ui = new UIManager();
+        this.fmUI = new FMUIManager(this);
 
         // 4. Bind Control Callbacks
         this.bindControlActions();
@@ -69,6 +74,9 @@ class GameApp {
             this.isMatchRunning = false;
             this.clearTeamEntities();
             this.ball.reset(0, 0);
+            if (fmEngine.userClub) {
+                this.fmUI.openCareerDashboard();
+            }
         };
 
         // 6. Start Master Animation Loop
@@ -84,21 +92,21 @@ class GameApp {
         const form = FORMATIONS[formationKey] || FORMATIONS['4-3-3'];
 
         // Build Home Team (11 players)
-        this.teamHome = homeData.players.map((pData, idx) => {
+        this.teamHome = homeData.players.slice(0, 11).map((pData, idx) => {
             const pos = form.positions[idx] || { x: -20, z: 0 };
             return new Player(this.engine3D.scene, homeData, pData, true, pos);
         });
 
         // Build Away Team (11 players - mirrored positions)
-        this.teamAway = awayData.players.map((pData, idx) => {
+        this.teamAway = awayData.players.slice(0, 11).map((pData, idx) => {
             const pos = form.positions[idx] || { x: -20, z: 0 };
             const mirroredPos = { x: -pos.x, z: -pos.z };
             return new Player(this.engine3D.scene, awayData, pData, false, mirroredPos);
         });
 
         // Assign User Controller to Striker
-        this.activePlayerIndex = 9;
-        this.humanPlayer = this.teamHome[this.activePlayerIndex] || this.teamHome[1];
+        this.activePlayerIndex = Math.min(9, this.teamHome.length - 1);
+        this.humanPlayer = this.teamHome[this.activePlayerIndex] || this.teamHome[0];
         this.updateActivePlayer();
 
         // Position Ball at Center Spot

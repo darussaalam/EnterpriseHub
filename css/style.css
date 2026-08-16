@@ -1,18 +1,18 @@
 /*
- * EA FC 27 Web Edition - Modern EA SPORTS FC Design System
+ * EA FC 27 x FOOTBALL MANAGER 27 - Modern Design System
  */
 
 :root {
-    --bg-dark: #0a0f1d;
-    --card-bg: rgba(18, 26, 47, 0.85);
+    --bg-dark: #070c18;
+    --card-bg: rgba(15, 23, 42, 0.88);
     --card-border: rgba(255, 255, 255, 0.12);
     --neon-volt: #00f59b;
     --neon-cyan: #00e5ff;
     --neon-gold: #fbbf24;
     --text-primary: #ffffff;
     --text-secondary: #94a3b8;
-    --font-heading: 'Teko', 'Rajdhani', 'Oswald', sans-serif;
-    --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --font-heading: 'Rajdhani', sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
 }
 
 * {
@@ -59,7 +59,7 @@ body, html {
     display: flex;
     flex-direction: column;
     pointer-events: auto;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .ui-screen.hidden {
@@ -76,8 +76,8 @@ body, html {
     width: 100%;
     height: 100%;
     z-index: 50;
-    background: rgba(5, 10, 20, 0.75);
-    backdrop-filter: blur(8px);
+    background: rgba(5, 10, 20, 0.78);
+    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -88,13 +88,13 @@ body, html {
 }
 
 /* ========================================================
-   1. MAIN MENU (EA SPORTS FC STYLE)
+   1. MAIN MENU
    ======================================================== */
 .main-menu-container {
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at top right, rgba(0, 245, 155, 0.15), transparent 50%),
-                radial-gradient(circle at bottom left, rgba(0, 229, 255, 0.12), transparent 45%),
+    background: radial-gradient(circle at top right, rgba(0, 245, 155, 0.16), transparent 55%),
+                radial-gradient(circle at bottom left, rgba(0, 229, 255, 0.14), transparent 50%),
                 linear-gradient(135deg, #070c18 0%, #0d1527 100%);
     display: flex;
     flex-direction: column;
@@ -134,7 +134,7 @@ body, html {
 
 .menu-nav-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.2rem;
 }
 
 .nav-tag-btn {
@@ -155,21 +155,19 @@ body, html {
     transform: translateY(-2px);
 }
 
-/* Grid Menu Cards */
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.8rem;
+    gap: 1.5rem;
     margin: 2rem 0;
 }
 
 .menu-tile-card {
     position: relative;
-    height: 340px;
+    height: 330px;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 16px;
-    padding: 2rem;
+    padding: 1.8rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -179,44 +177,28 @@ body, html {
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.menu-tile-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at top left, rgba(255,255,255,0.1), transparent 60%);
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
 .menu-tile-card:hover {
     transform: translateY(-8px) scale(1.02);
     border-color: var(--neon-volt);
-    box-shadow: 0 20px 40px rgba(0, 245, 155, 0.2);
-}
-
-.menu-tile-card:hover::before {
-    opacity: 1;
+    box-shadow: 0 20px 40px rgba(0, 245, 155, 0.22);
 }
 
 .tile-icon {
-    font-size: 3.5rem;
+    font-size: 3.2rem;
     margin-bottom: auto;
     filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
 }
 
 .tile-title {
-    font-size: 2.2rem;
+    font-size: 2rem;
     font-weight: 800;
-    line-height: 1;
+    line-height: 1.1;
     margin-bottom: 0.5rem;
 }
 
 .tile-desc {
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     line-height: 1.4;
 }
 
@@ -229,9 +211,379 @@ body, html {
 }
 
 /* ========================================================
-   2. TEAM SELECTION & SQUAD SCREEN
+   2. FOOTBALL MANAGER 27 (FM27) HUB & DASHBOARD
    ======================================================== */
-.team-select-container {
+.fm-hub-container {
+    width: 100%;
+    height: 100%;
+    background: #080e1a;
+    display: flex;
+    flex-direction: column;
+}
+
+.fm-topbar {
+    background: rgba(15, 23, 42, 0.95);
+    border-bottom: 1px solid var(--card-border);
+    padding: 0.8rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(12px);
+}
+
+.fm-club-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.fm-badge-icon {
+    font-size: 2rem;
+}
+
+.fm-club-brand h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.fm-sub-meta {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.fm-nav-tabs {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.fm-tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.6rem 1.1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fm-tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.fm-tab-btn.active {
+    color: #000000;
+    background: var(--neon-volt);
+    box-shadow: 0 4px 12px rgba(0, 245, 155, 0.3);
+}
+
+.fm-content-viewport {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem 2.5rem;
+}
+
+.fm-tab-content {
+    width: 100%;
+    height: 100%;
+}
+
+.fm-tab-content.hidden {
+    display: none;
+}
+
+.fm-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 1.8rem;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.fm-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1.8rem;
+}
+
+/* Next Match Box */
+.next-match-body {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.4rem;
+    margin-bottom: 1.5rem;
+}
+
+.next-match-badge {
+    font-size: 3.5rem;
+}
+
+.venue-tag {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--neon-volt);
+    letter-spacing: 1px;
+}
+
+.next-match-details h4 {
+    font-size: 1.6rem;
+    margin: 0.2rem 0;
+}
+
+.fm-match-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Tables (Standings, Squad) */
+.fm-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.fm-table th {
+    color: var(--text-secondary);
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--card-border);
+    font-weight: 700;
+}
+
+.fm-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.user-club-row {
+    background: rgba(0, 245, 155, 0.12);
+    border-left: 3px solid var(--neon-volt);
+}
+
+.team-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 700;
+}
+
+.pts-cell {
+    font-size: 1.15rem;
+    color: var(--neon-volt);
+}
+
+.form-badges {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.form-pill {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-pill.W { background: #10b981; color: #fff; }
+.form-pill.D { background: #64748b; color: #fff; }
+.form-pill.L { background: #ef4444; color: #fff; }
+
+.ovr-badge {
+    background: var(--neon-gold);
+    color: #000000;
+    font-weight: 900;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.btn-sell-player {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-sell-player:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+/* Transfer Market Grid */
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.2rem;
+}
+
+.market-player-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.market-player-card:hover {
+    border-color: var(--neon-cyan);
+}
+
+.mp-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+}
+
+.mp-ovr {
+    background: var(--neon-cyan);
+    color: #000;
+    font-weight: 900;
+    font-size: 1.1rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+}
+
+.mp-role {
+    font-weight: 800;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.mp-club {
+    margin-left: auto;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.mp-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+}
+
+.mp-meta {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.6rem;
+}
+
+.mp-price {
+    font-size: 1rem;
+    margin-bottom: 0.6rem;
+}
+
+.mp-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    gap: 0.2rem;
+}
+
+.mp-stats-row b {
+    color: #fff;
+}
+
+/* Inbox News */
+.inbox-container-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.inbox-item-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 1.2rem;
+}
+
+.inbox-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--neon-cyan);
+    margin-bottom: 0.4rem;
+}
+
+.inbox-title {
+    font-size: 1.15rem;
+    margin-bottom: 0.4rem;
+}
+
+.inbox-body {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Forms (Tactics, Transfer input) */
+.tactics-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.fm-select, .fm-input {
+    width: 100%;
+    background: #090f1d;
+    border: 1px solid var(--card-border);
+    color: #ffffff;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.fm-select:focus, .fm-input:focus {
+    border-color: var(--neon-volt);
+}
+
+/* Career Club Picker Grid */
+.career-pick-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 1rem 1.4rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.career-pick-card:hover {
+    border-color: var(--neon-volt);
+    background: rgba(0, 245, 155, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Team Selection & Common Styles */
+.team-select-container, .tactics-container, .tournament-container {
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, #070c18 0%, #0e172a 100%);
@@ -248,21 +600,20 @@ body, html {
 }
 
 .screen-title {
-    font-size: 2.5rem;
+    font-size: 2.3rem;
     font-weight: 800;
-    letter-spacing: -1px;
 }
 
 .team-picker-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    gap: 2.5rem;
     flex: 1;
     overflow: hidden;
 }
 
 .picker-side h3 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     color: var(--neon-cyan);
     margin-bottom: 1rem;
 }
@@ -273,7 +624,6 @@ body, html {
     gap: 0.8rem;
     max-height: 380px;
     overflow-y: auto;
-    padding-right: 0.5rem;
 }
 
 .team-card {
@@ -290,24 +640,21 @@ body, html {
 
 .team-card:hover {
     background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .team-card.active {
     border-color: var(--neon-volt);
     background: rgba(0, 245, 155, 0.12);
-    box-shadow: 0 0 20px rgba(0, 245, 155, 0.2);
 }
 
 .team-badge {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.4rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .team-name {
@@ -333,8 +680,8 @@ body, html {
     background: var(--neon-volt);
     color: #000000;
     border: none;
-    padding: 1rem 2.8rem;
-    font-size: 1.2rem;
+    padding: 0.9rem 2.5rem;
+    font-size: 1.15rem;
     font-weight: 800;
     border-radius: 999px;
     cursor: pointer;
@@ -343,26 +690,13 @@ body, html {
 }
 
 .btn-primary-fc:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 12px 30px rgba(0, 245, 155, 0.45);
-}
-
-/* ========================================================
-   3. TACTICS & SQUAD (ULTIMATE TEAM CARDS)
-   ======================================================== */
-.tactics-container {
-    width: 100%;
-    height: 100%;
-    background: #090e1c;
-    padding: 2.5rem 4rem;
-    display: flex;
-    flex-direction: column;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(0, 245, 155, 0.45);
 }
 
 .tactics-controls {
     display: flex;
     gap: 1rem;
-    margin-bottom: 1.5rem;
 }
 
 .formation-btn, .diff-btn {
@@ -373,7 +707,6 @@ body, html {
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.2s;
 }
 
 .formation-btn.active, .diff-btn.active {
@@ -382,112 +715,13 @@ body, html {
     border-color: var(--neon-volt);
 }
 
-.player-roster-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 1.2rem;
-    overflow-y: auto;
-    padding-bottom: 2rem;
-}
-
-.player-fut-card {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border: 2px solid var(--neon-gold);
-    border-radius: 12px;
-    padding: 1rem 0.8rem;
-    text-align: center;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.4);
-    position: relative;
-}
-
-.card-ovr {
-    font-size: 1.6rem;
-    font-weight: 900;
-    color: var(--neon-gold);
-}
-
-.card-pos {
-    font-size: 0.8rem;
-    font-weight: 800;
-    color: var(--neon-cyan);
-    margin-bottom: 0.4rem;
-}
-
-.card-name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 0.6rem;
-}
-
-.card-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.2rem;
-    font-size: 0.72rem;
-    color: var(--text-secondary);
-}
-
-.card-stats b {
-    color: #ffffff;
-}
-
 /* ========================================================
-   4. TOURNAMENT BRACKET
-   ======================================================== */
-.tournament-container {
-    width: 100%;
-    height: 100%;
-    background: #070c18;
-    padding: 2.5rem 4rem;
-    display: flex;
-    flex-direction: column;
-}
-
-.bracket-rounds-wrapper {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    flex: 1;
-    align-items: center;
-}
-
-.bracket-round h4 {
-    color: var(--neon-cyan);
-    font-size: 1.3rem;
-    margin-bottom: 1.2rem;
-    text-align: center;
-}
-
-.bracket-match {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    padding: 0.8rem 1rem;
-    margin-bottom: 1rem;
-}
-
-.bm-team {
-    font-weight: 700;
-    font-size: 0.95rem;
-}
-
-.bm-vs {
-    font-size: 0.75rem;
-    color: var(--neon-volt);
-    margin: 0.3rem 0;
-}
-
-/* ========================================================
-   5. IN-GAME HUD & OVERLAYS
+   3. IN-GAME HUD & RADAR
    ======================================================== */
 #screen-hud {
-    pointer-events: none; /* Let clicks pass through to game/touchpad */
+    pointer-events: none;
 }
 
-/* Top TV Scoreboard Banner */
 .hud-scoreboard-banner {
     position: absolute;
     top: 24px;
@@ -499,7 +733,6 @@ body, html {
     align-items: center;
     overflow: hidden;
     backdrop-filter: blur(12px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     pointer-events: auto;
 }
 
@@ -510,41 +743,11 @@ body, html {
     padding: 0.6rem 1.2rem;
 }
 
-.team-score-slot.home {
-    background: rgba(255, 255, 255, 0.05);
-}
+.team-abbr { font-weight: 800; font-size: 1.1rem; }
+.team-pts { font-weight: 900; font-size: 1.4rem; color: var(--neon-volt); }
+.hud-timer { background: #000; padding: 0.6rem 1rem; font-weight: 800; border-left: 2px solid var(--neon-volt); }
+.hud-pause-btn { background: transparent; border: none; color: #fff; font-size: 1.2rem; padding: 0 1rem; cursor: pointer; pointer-events: auto; }
 
-.team-abbr {
-    font-weight: 800;
-    font-size: 1.1rem;
-}
-
-.team-pts {
-    font-weight: 900;
-    font-size: 1.4rem;
-    color: var(--neon-volt);
-}
-
-.hud-timer {
-    background: #000000;
-    padding: 0.6rem 1rem;
-    font-weight: 800;
-    font-size: 1rem;
-    color: #ffffff;
-    border-left: 2px solid var(--neon-volt);
-}
-
-.hud-pause-btn {
-    background: transparent;
-    border: none;
-    color: #ffffff;
-    font-size: 1.2rem;
-    padding: 0 1rem;
-    cursor: pointer;
-    pointer-events: auto;
-}
-
-/* Active Player Bottom Card */
 .hud-bottom-player {
     position: absolute;
     bottom: 24px;
@@ -553,36 +756,14 @@ body, html {
     border: 1px solid var(--card-border);
     border-radius: 12px;
     padding: 0.8rem 1.4rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
     min-width: 200px;
     backdrop-filter: blur(8px);
 }
 
-.hud-player-row {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 700;
-    font-size: 1rem;
-}
+.hud-player-row { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.4rem; }
+.hud-stamina-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; }
+.hud-stamina-fill { height: 100%; width: 100%; background: var(--neon-volt); transition: width 0.1s linear; }
 
-.hud-stamina-bar {
-    width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.hud-stamina-fill {
-    height: 100%;
-    width: 100%;
-    background: var(--neon-volt);
-    transition: width 0.1s linear;
-}
-
-/* Power Meter Bar */
 .hud-power-bar {
     position: absolute;
     bottom: 85px;
@@ -594,18 +775,9 @@ body, html {
     border-radius: 5px;
     overflow: hidden;
 }
+.hud-power-bar.hidden { display: none; }
+.hud-power-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #facc15, #ef4444); }
 
-.hud-power-bar.hidden {
-    display: none;
-}
-
-.hud-power-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #10b981, #facc15, #ef4444);
-}
-
-/* Mini Radar Bottom Center */
 .hud-radar-container {
     position: absolute;
     bottom: 20px;
@@ -614,10 +786,8 @@ body, html {
     border: 1px solid var(--card-border);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
 }
 
-/* Goal Banner Announcement */
 .hud-goal-banner {
     position: absolute;
     top: 35%;
@@ -626,27 +796,20 @@ body, html {
     text-align: center;
     animation: goalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
-.hud-goal-banner.hidden {
-    display: none;
-}
-
+.hud-goal-banner.hidden { display: none; }
 .goal-giant-text {
-    font-size: 7rem;
+    font-size: 6.5rem;
     font-weight: 900;
     font-style: italic;
     background: linear-gradient(180deg, #ffffff 0%, var(--neon-volt) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 10px 30px rgba(0, 245, 155, 0.8));
-    letter-spacing: -2px;
 }
-
 .goal-scorer-tag {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    color: #ffffff;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.75);
     padding: 0.4rem 2rem;
     border-radius: 999px;
     display: inline-block;
@@ -657,7 +820,6 @@ body, html {
     100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
-/* Instant Replay Watermark */
 .hud-replay-tag {
     position: absolute;
     top: 24px;
@@ -669,21 +831,10 @@ body, html {
     padding: 0.5rem 1.4rem;
     border-radius: 6px;
     letter-spacing: 2px;
-    animation: pulse 1s infinite alternate;
 }
+.hud-replay-tag.hidden { display: none; }
 
-.hud-replay-tag.hidden {
-    display: none;
-}
-
-@keyframes pulse {
-    0% { opacity: 0.7; }
-    100% { opacity: 1; }
-}
-
-/* ========================================================
-   6. MOBILE TOUCH CONTROLS (VIRTUAL JOYSTICK & BUTTONS)
-   ======================================================== */
+/* Mobile Touch Controls */
 .touch-controls-container {
     position: absolute;
     top: 0;
@@ -692,7 +843,6 @@ body, html {
     height: 100%;
     pointer-events: none;
 }
-
 .touch-joystick-base {
     position: absolute;
     bottom: 35px;
@@ -707,15 +857,7 @@ body, html {
     justify-content: center;
     pointer-events: auto;
 }
-
-.touch-joystick-thumb {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: var(--neon-volt);
-    box-shadow: 0 0 15px var(--neon-volt);
-}
-
+.touch-joystick-thumb { width: 50px; height: 50px; border-radius: 50%; background: var(--neon-volt); }
 .touch-buttons-cluster {
     position: absolute;
     bottom: 30px;
@@ -725,115 +867,53 @@ body, html {
     gap: 12px;
     pointer-events: auto;
 }
-
 .touch-action-btn {
     width: 62px;
     height: 62px;
     border-radius: 50%;
     background: rgba(15, 23, 42, 0.85);
     border: 2px solid var(--card-border);
-    color: #ffffff;
     font-weight: 800;
     font-size: 0.85rem;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    backdrop-filter: blur(8px);
 }
+.touch-action-btn.btn-shoot { border-color: #ef4444; background: rgba(239, 68, 68, 0.25); }
+.touch-action-btn.btn-pass { border-color: var(--neon-volt); background: rgba(0, 245, 155, 0.25); }
 
-.touch-action-btn:active {
-    transform: scale(0.92);
-    border-color: var(--neon-volt);
-    background: rgba(0, 245, 155, 0.2);
-}
-
-.touch-action-btn.btn-shoot {
-    border-color: #ef4444;
-    background: rgba(239, 68, 68, 0.25);
-}
-
-.touch-action-btn.btn-pass {
-    border-color: var(--neon-volt);
-    background: rgba(0, 245, 155, 0.25);
-}
-
-/* Hide touch cluster on desktop if mouse is used, shown on touch screens */
 @media (hover: hover) and (pointer: fine) {
-    .touch-controls-container {
-        display: none;
-    }
+    .touch-controls-container { display: none; }
 }
 
-/* ========================================================
-   7. MATCH SUMMARY STATS SCREEN
-   ======================================================== */
+/* Match Summary */
 .summary-container {
     width: 100%;
     height: 100%;
     background: rgba(8, 14, 26, 0.95);
     backdrop-filter: blur(20px);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem;
+    padding: 2rem;
 }
-
 .summary-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 20px;
-    padding: 2.5rem 4rem;
-    width: 650px;
+    padding: 2.5rem 3.5rem;
+    width: 620px;
     max-width: 95%;
     text-align: center;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.7);
 }
+.summary-score { font-size: 2.2rem; font-weight: 900; margin: 1.5rem 0; color: var(--neon-volt); }
+.stats-table { width: 100%; margin: 1.5rem 0; display: flex; flex-direction: column; gap: 0.8rem; }
+.stat-row { display: flex; justify-content: space-between; font-size: 1.05rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.4rem; }
+.stat-label { color: var(--text-secondary); }
 
-.summary-score {
-    font-size: 2.4rem;
-    font-weight: 900;
-    margin: 1.5rem 0;
-    color: var(--neon-volt);
-}
-
-.stats-table {
-    width: 100%;
-    margin: 2rem 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-}
-
-.stat-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.1rem;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    padding-bottom: 0.4rem;
-}
-
-.stat-label {
-    color: var(--text-secondary);
-}
-
-/* Responsive Breakpoints */
+/* Responsive adjustments */
 @media (max-width: 900px) {
-    .menu-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-    .main-menu-container, .team-select-container, .tactics-container {
-        padding: 1.5rem;
-    }
-    .hud-scoreboard-banner {
-        top: 10px;
-        left: 10px;
-    }
-    .hud-bottom-player {
-        bottom: 10px;
-        left: 10px;
-        min-width: 150px;
-    }
+    .menu-grid { grid-template-columns: 1fr 1fr; }
+    .main-menu-container, .fm-topbar { padding: 1.2rem; }
+    .fm-dashboard-grid { grid-template-columns: 1fr; }
 }
