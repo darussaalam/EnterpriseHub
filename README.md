@@ -1,98 +1,90 @@
-# ⚽ EA SPORTS FC 27 - Web Edition (Game Sepak Bola 3D Browser)
+# 🏢 EnterpriseHub Pro — Enterprise Management & Mobile PWA Suite
+### Source Code Komersial & White-Label Ready (Full Version)
 
-Game simulasi sepak bola 3D bertema **EA SPORTS FC 27** yang dirancang khusus untuk berjalan langsung di browser modern (Chrome, Edge, Firefox, Safari, Mobile Browser) tanpa perlu download/install aplikasi tambahan.
-
----
-
-## 🌟 Fitur Utama
-
-- **Grafis 3D & Fisika Realistis**:
-  - Lapangan rumput bertekstur dengan garis potong (*mower lines*), stadion berlampu sorot malam hari (*floodlights*), papan iklan elektronik LED animasi di pinggir lapangan.
-  - Gawang 3D dengan tiang dan jaring gawang dinamis.
-  - Efek pantulan tiang/mistar (*post collision*), defleksi kiper, dan gaya putar bola (*Magnus effect/curl*).
-- **Klub & Timnas Top Dunia**:
-  - Real Madrid, Manchester City, FC Barcelona, Arsenal, Bayern München.
-  - Tim Nasional: Indonesia (Jay Idzes, Maarten Paes, Marselino, Thom Haye, Ragnar), Argentina (Messi, Alvarez), Brazil (Vinicius, Endrick).
-- **Mode Permainan**:
-  - **Kick Off**: Pertandingan persahabatan 11v11 dengan pengaturan tingkat kesulitan AI (*Professional / World Class*).
-  - **Champions Cup Tournament**: Mode turnamen gugur (Quarter-Finals -> Semi-Finals -> Grand Final).
-  - **Ultimate Team & Taktik**: Formasi tim (4-3-3, 4-2-3-1, 4-4-2, 3-5-2) dan kartu rating pemain (*FUT Style Card*).
-- **Kontrol Lengkap (Keyboard, Gamepad Stik & Mobile Touch)**:
-  - Dribbling lincah, Sprint dengan sistem stamina.
-  - Umpan Datar (*Ground Pass*), Umpan Terobosan (*Through Ball*), Umpan Lambung (*Lob Pass / Crossing*).
-  - Tembakan Bertenaga (*Power Shot*) dengan indikator *Power Meter*.
-  - Bertahan: *Slide Tackle* dan tombol *Switch Player*.
-  - Skill Move: *Roulette 360 Spin*.
-- **Fitur Siaran TV**:
-  - Papan Skor & Timer siaran pertandingan.
-  - Mini Radar 2D di bawah layar melacak 22 pemain dan posisi bola secara real-time.
-  - Selebrasi Gol & **Instant Replay Slow-Motion** dengan kamera sinematik berputar.
-  - Laporan statistik lengkap di akhir laga (*Possession, Shots, Shots on Target, Tackles*).
-- **Audio Engine (Web Audio API)**:
-  - Efek suara peluit wasit, dentuman tendangan bola, denting tiang gawang, dan gemuruh sorakan penonton saat terjadi gol.
+> **Paket Source Code Enterprise Management System (Web Admin + Mobile PWA)** siap pakai, siap jual kembali, atau dideploy untuk kebutuhan klien perusahaan, UMKM, instansi, dan korporat.
 
 ---
 
-## 🎮 Panduan Kontrol
+## 🌟 Keunggulan Produk (Selling Points)
 
-### ⌨️ Keyboard (PC / Laptop)
-| Aksi | Tombol Utama | Tombol Alternatif |
-| :--- | :--- | :--- |
-| **Pergerakan / Dribble** | `W / A / S / D` | `Panah Atas / Kiri / Bawah / Kanan` |
-| **Umpan Pendek (Pass)** | `X` | `J` |
-| **Umpan Terobosan (Through Ball)** | `W` | `I` |
-| **Tembak / Shooting (Tahan untuk Power)** | `D` | `K` |
-| **Umpan Lambung (Lob / Cross)** | `A` | `L` |
-| **Lari Cepat (Sprint)** | `Shift Kiri` | `Spasi` |
-| **Tekel Geser (Slide Tackle)** | `C` | `;` (Semicolon) |
-| **Ganti Pemain Aktif** | `Q` | `U` |
-| **Skill Move (Roulette 360)** | `E` | `O` |
-
-### 🎮 Gamepad / Stik Controller (Xbox / PlayStation)
-- **Analog Kiri**: Menggerakkan pemain.
-- **Tombol A / Silang (X)**: Umpan pendek.
-- **Tombol B / Bulat (O)**: Tembakan bertenaga (*Power Shot*).
-- **Tombol Y / Segitiga (Δ)**: Umpan terobosan.
-- **Tombol X / Kotak (□)**: Umpan lambung / Tekel geser saat bertahan.
-- **Tombol RT / R2**: Sprint.
-- **Tombol LB / L1**: Ganti kursor pemain aktif.
-- **Tekan Analog Kanan (R3)**: Skill move.
-
-### 📱 Layar Sentuh Smartphone (Mobile Touch)
-- **Virtual Joystick** di kiri bawah untuk mengarahkan pemain.
-- Tombol aksi di kanan bawah: **PASS**, **SHOOT**, **THRU**, **LOB**, **SWITCH**, **SKILL**, dan **SLIDE TACKLE**.
+1. **Dual Interface Terintegrasi**:
+   - **Web Admin Portal**: Untuk HRD, Manager, Finance, Supervisor, dan Super Admin (Layout Desktop & Tablet responsif).
+   - **Mobile PWA Employee**: Dirancang khusus tampilan smartphone (Mobile App tanpa perlu instalasi rumit dari Play Store).
+2. **Presensi Canggih Anti-Fraud**:
+   - **Live Camera Selfie (WebRTC)**: Validasi foto wajah saat jam masuk dan pulang.
+   - **GPS Geofencing**: Mengunci koordinat GPS dan memvalidasi radius jarak kantor terdaftar secara real-time.
+   - **Kalkulasi Jam Kerja Otomatis**: Menghitung durasi kerja harian, lembur, dan status terlambat.
+3. **PWA Standalone (Progressive Web App)**:
+   - Bisa di-install langsung dari browser ke Home Screen HP Android & iOS.
+   - Dilengkapi icon aplikasi, offline caching (Service Worker), dan dukungan Push Notification.
+4. **Modul Lengkap Terpadu (Satu Database MySQL/SQLite)**:
+   - **HR**: Manajemen Karyawan, Presensi Live Log, Approval Cuti/Izin, Approval WFH.
+   - **Project & Task**: Monitoring Proyek, Task Assignment, Task Progress Slider (25%-100%).
+   - **Finance**: Generator Payroll Otomatis, Cetak Slip Gaji Digital Resmi (Confidential).
+   - **Asset Management**: Inventarisasi perangkat IT, serial number, kondisi, dan penanggung jawab.
+   - **Geofence Setting**: Kelola koordinat GPS kantor cabang dan toleransi radius meter.
+   - **Executive Reports**: Generator rekapitulasi presensi, pengeluaran gaji, dan kinerja proyek.
 
 ---
 
-## 🚀 Cara Deploy Online (1-Click GitHub Pages)
+## 📁 Struktur Berkas Source Code
 
-Game ini dibangun dengan arsitektur web murni (*pure client-side*), sehingga **100% siap di-deploy secara instan dan gratis ke GitHub Pages**.
-
-### Langkah-langkah Deploy ke GitHub:
-1. Buat repository baru di akun GitHub Anda (misalnya: `ea-fc27-web`).
-2. Masukkan semua file dari folder ini ke dalam repository tersebut:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial release EA FC 27 Web Edition"
-   git branch -M main
-   git remote add origin https://github.com/USERNAME-ANDA/ea-fc27-web.git
-   git push -u origin main
-   ```
-3. Buka halaman repository di GitHub, lalu klik tab **Settings** > **Pages**.
-4. Pada bagian **Branch**, pilih `main` dan folder `/ (root)`, lalu klik **Save**.
-5. Tunggu sekitar 1-2 menit, link game online Anda akan langsung aktif di:
-   `https://USERNAME-ANDA.github.io/ea-fc27-web/`
-6. Bagikan link tersebut ke teman atau buka langsung dari HP / Laptop mana saja di seluruh dunia!
-
----
-
-## 💻 Cara Menjalankan Secara Lokal di Komputer
-
-Cukup buka file `index.html` menggunakan browser modern apa saja, atau gunakan local web server (misalnya VS Code Live Server atau Python simple server):
-
-```bash
-# Menggunakan Python
-python -m http.server 8080
+```text
+📁 EnterpriseHub-Source-Code/
+├── 📄 README.md                             # Ringkasan produk & quick start
+├── 📄 RULES_DAN_LISENSI.md                  # Aturan lisensi komersial & hak jual kembali
+├── 📄 PANDUAN_PEMBELI_DAN_INSTALASI.md      # Panduan instalasi (Localhost, cPanel, VPS, Cloud)
+├── 📄 ARSITEKTUR_DAN_KUSTOMISASI.md         # Panduan developer untuk kustomisasi & branding
+├── 📁 enterprise_app/                       # Backend Laravel 10 + Frontend Blade + API
+│   ├── 📁 app/                              # Controllers, Models, Middleware
+│   ├── 📁 database/                         # Migrations & Seeders (Demo data lengkap)
+│   ├── 📁 public/                           # Manifest PWA, Service Worker, Custom CSS/JS, Icons
+│   ├── 📁 resources/views/                  # Layouts, Auth, Mobile PWA, Web Admin Views
+│   ├── 📁 routes/                           # web.php & api.php
+│   ├── 📄 Dockerfile                        # Konfigurasi deploy cloud (Render / Railway)
+│   └── 📄 render.yaml                       # Spek 1-click cloud deploy
+└── 📁 docs/                                 # Static Live PWA Edition (Deploy 1-klik ke GitHub Pages)
+    ├── 📄 index.html                        # Live interactive demo
+    ├── 📄 manifest.json                     # PWA Manifest
+    └── 📄 sw.js                             # Service Worker Cache
 ```
-Lalu buka `http://localhost:8080` di browser Anda.
+
+---
+
+## ⚡ Quick Start (Jalankan dalam 1 Menit di Komputer Lokal)
+
+1. Pastikan komputer Anda telah terpasang **PHP 8.1+** dan **Composer** (contoh: XAMPP).
+2. Buka folder `enterprise_app` di Terminal / PowerShell:
+   ```bash
+   cd enterprise_app
+   ```
+3. Jalankan server lokal:
+   ```bash
+   php artisan serve
+   ```
+4. Buka di browser:
+   - **Web Admin**: [http://127.0.0.1:8000/admin/dashboard](http://127.0.0.1:8000/admin/dashboard)
+   - **Mobile PWA**: [http://127.0.0.1:8000/mobile/dashboard](http://127.0.0.1:8000/mobile/dashboard)
+
+---
+
+## 🔑 Akun & Kredensial Demo (Default Password: `password123`)
+
+Tersedia tombol **⚡ 1-Click Demo Login** di halaman login untuk beralih akun secara instan:
+
+| Akun | Email | Role | Akses Fitur |
+| :--- | :--- | :--- | :--- |
+| **Budi Santoso** | `budi@enterprise.com` | `employee` | Mobile PWA, Presensi Kamera/GPS, Tugas, Cuti, Slip Gaji |
+| **Siti Rahmawati** | `siti@enterprise.com` | `employee` | Mobile PWA UI/UX, Tugas Selesai, Slip Gaji |
+| **Super Admin** | `admin@enterprise.com` | `admin` | Seluruh Akses Web Admin, Settings, & Database |
+| **Sarah Wijaya** | `hr@enterprise.com` | `hr` | Data Karyawan, Live Log Presensi, Approval Cuti/WFH |
+| **Hendro Pratama** | `manager@enterprise.com` | `manager` | Manajemen Proyek & Pembagian Tugas Tim |
+| **Dewi Anggraini** | `finance@enterprise.com` | `finance` | Generator Gaji (Payroll) & Pencairan Slip |
+
+---
+
+## 📖 Dokumen Panduan Pembeli
+Silakan baca berkas berikut untuk petunjuk teknis lebih mendalam:
+- 📜 [RULES_DAN_LISENSI.md](file:///e:/New%20folder/New%20folder/RULES_DAN_LISENSI.md) — Ketentuan lisensi komersial dan hak jual ulang.
+- 🛠️ [PANDUAN_PEMBELI_DAN_INSTALASI.md](file:///e:/New%20folder/New%20folder/PANDUAN_PEMBELI_DAN_INSTALASI.md) — Panduan instalasi di cPanel, VPS, dan Docker.
+- 🎨 [ARSITEKTUR_DAN_KUSTOMISASI.md](file:///e:/New%20folder/New%20folder/ARSITEKTUR_DAN_KUSTOMISASI.md) — Cara mengganti logo, warna, dan menambah fitur baru.

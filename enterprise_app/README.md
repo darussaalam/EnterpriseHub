@@ -1,66 +1,90 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏢 EnterpriseHub Pro — Enterprise Management & Mobile PWA Suite
+### Source Code Komersial & White-Label Ready (Full Version)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> **Paket Source Code Enterprise Management System (Web Admin + Mobile PWA)** siap pakai, siap jual kembali, atau dideploy untuk kebutuhan klien perusahaan, UMKM, instansi, dan korporat.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🌟 Keunggulan Produk (Selling Points)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Dual Interface Terintegrasi**:
+   - **Web Admin Portal**: Untuk HRD, Manager, Finance, Supervisor, dan Super Admin (Layout Desktop & Tablet responsif).
+   - **Mobile PWA Employee**: Dirancang khusus tampilan smartphone (Mobile App tanpa perlu instalasi rumit dari Play Store).
+2. **Presensi Canggih Anti-Fraud**:
+   - **Live Camera Selfie (WebRTC)**: Validasi foto wajah saat jam masuk dan pulang.
+   - **GPS Geofencing**: Mengunci koordinat GPS dan memvalidasi radius jarak kantor terdaftar secara real-time.
+   - **Kalkulasi Jam Kerja Otomatis**: Menghitung durasi kerja harian, lembur, dan status terlambat.
+3. **PWA Standalone (Progressive Web App)**:
+   - Bisa di-install langsung dari browser ke Home Screen HP Android & iOS.
+   - Dilengkapi icon aplikasi, offline caching (Service Worker), dan dukungan Push Notification.
+4. **Modul Lengkap Terpadu (Satu Database MySQL/SQLite)**:
+   - **HR**: Manajemen Karyawan, Presensi Live Log, Approval Cuti/Izin, Approval WFH.
+   - **Project & Task**: Monitoring Proyek, Task Assignment, Task Progress Slider (25%-100%).
+   - **Finance**: Generator Payroll Otomatis, Cetak Slip Gaji Digital Resmi (Confidential).
+   - **Asset Management**: Inventarisasi perangkat IT, serial number, kondisi, dan penanggung jawab.
+   - **Geofence Setting**: Kelola koordinat GPS kantor cabang dan toleransi radius meter.
+   - **Executive Reports**: Generator rekapitulasi presensi, pengeluaran gaji, dan kinerja proyek.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📁 Struktur Berkas Source Code
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```text
+📁 EnterpriseHub-Source-Code/
+├── 📄 README.md                             # Ringkasan produk & quick start
+├── 📄 RULES_DAN_LISENSI.md                  # Aturan lisensi komersial & hak jual kembali
+├── 📄 PANDUAN_PEMBELI_DAN_INSTALASI.md      # Panduan instalasi (Localhost, cPanel, VPS, Cloud)
+├── 📄 ARSITEKTUR_DAN_KUSTOMISASI.md         # Panduan developer untuk kustomisasi & branding
+├── 📁 enterprise_app/                       # Backend Laravel 10 + Frontend Blade + API
+│   ├── 📁 app/                              # Controllers, Models, Middleware
+│   ├── 📁 database/                         # Migrations & Seeders (Demo data lengkap)
+│   ├── 📁 public/                           # Manifest PWA, Service Worker, Custom CSS/JS, Icons
+│   ├── 📁 resources/views/                  # Layouts, Auth, Mobile PWA, Web Admin Views
+│   ├── 📁 routes/                           # web.php & api.php
+│   ├── 📄 Dockerfile                        # Konfigurasi deploy cloud (Render / Railway)
+│   └── 📄 render.yaml                       # Spek 1-click cloud deploy
+└── 📁 docs/                                 # Static Live PWA Edition (Deploy 1-klik ke GitHub Pages)
+    ├── 📄 index.html                        # Live interactive demo
+    ├── 📄 manifest.json                     # PWA Manifest
+    └── 📄 sw.js                             # Service Worker Cache
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ⚡ Quick Start (Jalankan dalam 1 Menit di Komputer Lokal)
 
-## Laravel Sponsors
+1. Pastikan komputer Anda telah terpasang **PHP 8.1+** dan **Composer** (contoh: XAMPP).
+2. Buka folder `enterprise_app` di Terminal / PowerShell:
+   ```bash
+   cd enterprise_app
+   ```
+3. Jalankan server lokal:
+   ```bash
+   php artisan serve
+   ```
+4. Buka di browser:
+   - **Web Admin**: [http://127.0.0.1:8000/admin/dashboard](http://127.0.0.1:8000/admin/dashboard)
+   - **Mobile PWA**: [http://127.0.0.1:8000/mobile/dashboard](http://127.0.0.1:8000/mobile/dashboard)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+---
 
-### Premium Partners
+## 🔑 Akun & Kredensial Demo (Default Password: `password123`)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Tersedia tombol **⚡ 1-Click Demo Login** di halaman login untuk beralih akun secara instan:
 
-## Contributing
+| Akun | Email | Role | Akses Fitur |
+| :--- | :--- | :--- | :--- |
+| **Budi Santoso** | `budi@enterprise.com` | `employee` | Mobile PWA, Presensi Kamera/GPS, Tugas, Cuti, Slip Gaji |
+| **Siti Rahmawati** | `siti@enterprise.com` | `employee` | Mobile PWA UI/UX, Tugas Selesai, Slip Gaji |
+| **Super Admin** | `admin@enterprise.com` | `admin` | Seluruh Akses Web Admin, Settings, & Database |
+| **Sarah Wijaya** | `hr@enterprise.com` | `hr` | Data Karyawan, Live Log Presensi, Approval Cuti/WFH |
+| **Hendro Pratama** | `manager@enterprise.com` | `manager` | Manajemen Proyek & Pembagian Tugas Tim |
+| **Dewi Anggraini** | `finance@enterprise.com` | `finance` | Generator Gaji (Payroll) & Pencairan Slip |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📖 Dokumen Panduan Pembeli
+Silakan baca berkas berikut untuk petunjuk teknis lebih mendalam:
+- 📜 [RULES_DAN_LISENSI.md](file:///e:/New%20folder/New%20folder/RULES_DAN_LISENSI.md) — Ketentuan lisensi komersial dan hak jual ulang.
+- 🛠️ [PANDUAN_PEMBELI_DAN_INSTALASI.md](file:///e:/New%20folder/New%20folder/PANDUAN_PEMBELI_DAN_INSTALASI.md) — Panduan instalasi di cPanel, VPS, dan Docker.
+- 🎨 [ARSITEKTUR_DAN_KUSTOMISASI.md](file:///e:/New%20folder/New%20folder/ARSITEKTUR_DAN_KUSTOMISASI.md) — Cara mengganti logo, warna, dan menambah fitur baru.
