@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>EnterpriseHub - Web Admin + Mobile PWA Management</title>
+  
+  <!-- PWA Metadata -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EnterpriseHub">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon.svg">
+
+  <!-- Bootstrap 5 & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="./css/custom.css">
+</head>
+<body class="bg-slate-100">
+
+  <!-- ================= TOP DEMO CONTROLLER BAR ================= -->
+  <div class="bg-slate-900 text-white px-3 py-2 d-flex flex-wrap justify-content-between align-items-center gap-2 border-bottom border-slate-700 small no-print">
+    <div class="d-flex align-items-center gap-2">
+      <img src="./icons/icon.svg" width="24" height="24" class="rounded" alt="Logo">
+      <strong class="text-white">Enterprise<span class="text-primary">Hub</span></strong>
+      <span class="badge bg-primary px-2 py-1 rounded-pill" style="font-size: 10px;">Live PWA Edition</span>
+    </div>
+
+    <!-- Mode & Role Switcher -->
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <div class="btn-group btn-group-sm" role="group">
+        <button type="button" class="btn btn-outline-info active" id="btn-view-mobile" onclick="setView('mobile')">
+          <i class="bi bi-phone me-1"></i> Mobile PWA
+        </button>
+        <button type="button" class="btn btn-outline-light" id="btn-view-admin" onclick="setView('admin')">
+          <i class="bi bi-speedometer2 me-1"></i> Web Admin
+        </button>
+      </div>
+
+      <div class="dropdown">
+        <button class="btn btn-sm btn-outline-warning dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown">
+          <i class="bi bi-person-circle me-1"></i> Switch Role
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 small">
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="switchRole('employee')"><i class="bi bi-phone me-2 text-primary"></i>Employee (Budi)</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="switchRole('admin')"><i class="bi bi-shield-lock me-2 text-danger"></i>Super Admin</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="switchRole('hr')"><i class="bi bi-person-badge me-2 text-info"></i>HR Manager (Sarah)</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="switchRole('manager')"><i class="bi bi-briefcase me-2 text-warning"></i>PM Manager (Hendro)</a></li>
+          <li><a class="dropdown-item" href="javascript:void(0)" onclick="switchRole('finance')"><i class="bi bi-cash me-2 text-success"></i>Finance (Dewi)</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- 1. MOBILE EMPLOYEE PWA VIEW CONTAINER                     -->
+  <!-- ========================================================= -->
+  <div id="view-mobile-wrapper" class="mobile-wrapper">
+    
+    <!-- Top Mobile Header -->
+    <header class="mobile-header d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <img src="./icons/icon.svg" width="30" height="30" class="rounded" alt="Logo">
+        <span class="fw-bold text-dark fs-6">Enterprise<span class="text-primary">Hub</span></span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button onclick="openMobileTab('tab-notifications')" class="btn btn-light btn-sm rounded-circle p-2 position-relative">
+          <i class="bi bi-bell fs-6"></i>
+          <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+        </button>
+        <img id="mobile-user-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" width="32" height="32" class="rounded-circle object-fit-cover border" alt="Avatar">
+      </div>
+    </header>
+
+    <!-- Main Mobile Content -->
+    <main class="mobile-content">
+      
+      <!-- PWA Install Banner -->
+      <div id="pwa-install-banner" class="pwa-install-banner mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-phone fs-3"></i>
+          <div>
+            <div class="fw-bold small">Pasang EnterpriseHub di HP</div>
+            <div class="text-white-50" style="font-size: 11px;">Bisa install dari browser tanpa Play Store</div>
+          </div>
+        </div>
+        <button onclick="triggerPwaInstall()" class="btn btn-sm btn-light fw-bold text-primary rounded-pill px-3 py-1">
+          Install
+        </button>
+      </div>
+
+      <!-- ================= TAB: MOBILE DASHBOARD ================= -->
+      <div id="tab-dashboard" class="mobile-tab-content">
+        <!-- Profile Banner -->
+        <div class="d-flex align-items-center justify-content-between mb-3 pt-1">
+          <div class="d-flex align-items-center gap-2">
+            <div>
+              <div class="fw-bold fs-6 text-slate-900 mb-0" id="dash-user-name">Budi Santoso</div>
+              <div class="text-muted small" id="dash-user-position">Senior Fullstack Engineer &bull; <span class="badge bg-light text-dark">ENG</span></div>
+            </div>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded-pill small">
+            <i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> Aktif
+          </span>
+        </div>
+
+        <!-- Attendance Card Today -->
+        <div class="attendance-card mb-3">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <span class="text-white-50 text-uppercase fw-semibold" style="font-size: 11px;">Presensi Hari Ini</span>
+              <div class="fs-4 fw-black text-white" id="live-clock">--:--:-- WIB</div>
+            </div>
+            <span class="badge bg-success px-2 py-1 rounded-pill" id="badge-work-status">Sedang Bekerja</span>
+          </div>
+
+          <div class="row g-2 mb-3 bg-white bg-opacity-10 p-2 rounded-3 text-center">
+            <div class="col-6 border-end border-white border-opacity-10">
+              <div class="text-white-50" style="font-size: 11px;">Check-In</div>
+              <div class="fw-bold fs-6 text-white" id="dash-checkin-time">08:45 WIB</div>
+            </div>
+            <div class="col-6">
+              <div class="text-white-50" style="font-size: 11px;">Check-Out</div>
+              <div class="fw-bold fs-6 text-white" id="dash-checkout-time">--:--</div>
+            </div>
+          </div>
+
+          <button onclick="openMobileTab('tab-attendance')" class="btn btn-primary w-100 fw-bold py-2 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-camera-fill"></i> Buka Kamera & GPS Presensi
+          </button>
+        </div>
+
+        <!-- Quick Menus -->
+        <div class="mb-3">
+          <h6 class="fw-bold text-slate-800 mb-2">Menu Cepat</h6>
+          <div class="row g-2">
+            <div class="col-3 text-center">
+              <div onclick="openMobileTab('tab-attendance')" class="card border-0 shadow-sm p-2 rounded-3 bg-white h-100 cursor-pointer">
+                <div class="p-2 rounded-circle bg-primary-subtle text-primary mb-1 mx-auto"><i class="bi bi-camera-fill fs-5"></i></div>
+                <span class="small fw-semibold" style="font-size: 11px;">Absensi</span>
+              </div>
+            </div>
+            <div class="col-3 text-center">
+              <div onclick="openMobileTab('tab-requests')" class="card border-0 shadow-sm p-2 rounded-3 bg-white h-100 cursor-pointer">
+                <div class="p-2 rounded-circle bg-warning-subtle text-warning mb-1 mx-auto"><i class="bi bi-calendar2-range-fill fs-5"></i></div>
+                <span class="small fw-semibold" style="font-size: 11px;">Cuti/WFH</span>
+              </div>
+            </div>
+            <div class="col-3 text-center">
+              <div onclick="openMobileTab('tab-tasks')" class="card border-0 shadow-sm p-2 rounded-3 bg-white h-100 cursor-pointer">
+                <div class="p-2 rounded-circle bg-success-subtle text-success mb-1 mx-auto"><i class="bi bi-list-task fs-5"></i></div>
+                <span class="small fw-semibold" style="font-size: 11px;">Tugas</span>
+              </div>
+            </div>
+            <div class="col-3 text-center">
+              <div onclick="openMobileTab('tab-profile')" class="card border-0 shadow-sm p-2 rounded-3 bg-white h-100 cursor-pointer">
+                <div class="p-2 rounded-circle bg-info-subtle text-info mb-1 mx-auto"><i class="bi bi-receipt fs-5"></i></div>
+                <span class="small fw-semibold" style="font-size: 11px;">Slip Gaji</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Tasks -->
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-bold text-slate-800 mb-0">Tugas Aktif Anda</h6>
+            <a href="javascript:void(0)" onclick="openMobileTab('tab-tasks')" class="text-primary small fw-semibold text-decoration-none">Semua</a>
+          </div>
+          <div id="dash-active-tasks-list"></div>
+        </div>
+      </div>
+
+      <!-- ================= TAB: MOBILE ATTENDANCE ================= -->
+      <div id="tab-attendance" class="mobile-tab-content d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-slate-900 mb-0">Presensi Kamera & GPS</h5>
+          <button onclick="openMobileTab('tab-dashboard')" class="btn btn-light btn-sm rounded-pill px-3">Kembali</button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white text-center">
+          <!-- Camera Feed -->
+          <div class="camera-container mb-3 position-relative">
+            <video id="pwa-camera-video" autoplay playsinline muted></video>
+            <canvas id="pwa-camera-canvas" class="d-none"></canvas>
+            <img id="pwa-selfie-preview" class="d-none rounded-circle w-100 h-100 object-fit-cover" alt="Selfie">
+            <div class="camera-scanline" id="pwa-scanline"></div>
+          </div>
+
+          <div class="d-flex justify-content-center gap-2 mb-3">
+            <button type="button" id="btn-pwa-snap" onclick="snapPwaSelfie()" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold">
+              <i class="bi bi-camera-fill me-1"></i> Ambil Selfie
+            </button>
+            <button type="button" id="btn-pwa-retake" onclick="resetPwaSelfie()" class="btn btn-outline-secondary rounded-pill px-3 py-2 d-none">
+              <i class="bi bi-arrow-repeat me-1"></i> Ulangi
+            </button>
+          </div>
+
+          <!-- GPS Coordinates -->
+          <div class="p-3 bg-light rounded-3 text-start small border mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="fw-bold text-slate-800"><i class="bi bi-geo-alt-fill text-success me-1"></i> Koordinat GPS:</span>
+              <button onclick="detectPwaGPS()" class="btn btn-sm btn-link p-0 text-decoration-none">Refresh</button>
+            </div>
+            <div id="pwa-gps-text" class="text-muted">Mendeteksi lokasi GPS...</div>
+            <div id="pwa-distance-text" class="text-primary fw-bold mt-1">Jarak ke Head Office: 18 meter (Dalam Radius)</div>
+          </div>
+
+          <!-- Check-in and Check-out Buttons -->
+          <div class="d-flex flex-column gap-2">
+            <button onclick="doCheckIn()" id="btn-do-checkin" class="btn btn-success w-100 py-2 rounded-3 fw-bold">
+              <i class="bi bi-box-arrow-in-right me-1"></i> SUBMIT CHECK-IN SEKARANG
+            </button>
+            <button onclick="doCheckOut()" id="btn-do-checkout" class="btn btn-danger w-100 py-2 rounded-3 fw-bold">
+              <i class="bi bi-box-arrow-right me-1"></i> CHECK-OUT (PULANG)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= TAB: MOBILE TASKS ================= -->
+      <div id="tab-tasks" class="mobile-tab-content d-none">
+        <h5 class="fw-bold text-slate-900 mb-2">Tugas & Pekerjaan</h5>
+        <div id="tasks-container-list"></div>
+      </div>
+
+      <!-- ================= TAB: MOBILE REQUESTS ================= -->
+      <div id="tab-requests" class="mobile-tab-content d-none">
+        <h5 class="fw-bold text-slate-900 mb-2">Pengajuan Cuti & WFH</h5>
+        
+        <ul class="nav nav-pills nav-fill bg-white p-1 rounded-4 shadow-sm mb-3">
+          <li class="nav-item"><button class="nav-link active rounded-4 small py-2 fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-sub-cuti">Cuti/Izin</button></li>
+          <li class="nav-item"><button class="nav-link rounded-4 small py-2 fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-sub-wfh">WFH</button></li>
+          <li class="nav-item"><button class="nav-link rounded-4 small py-2 fw-semibold" data-bs-toggle="tab" data-bs-target="#tab-sub-history">Riwayat</button></li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="tab-sub-cuti">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+              <h6 class="fw-bold text-slate-800 mb-2">Form Permohonan Cuti</h6>
+              <div class="mb-2">
+                <label class="form-label small text-muted">Jenis</label>
+                <select id="input-leave-type" class="form-select rounded-3">
+                  <option value="annual">Cuti Tahunan</option>
+                  <option value="sick">Izin Sakit</option>
+                  <option value="permission">Izin Keperluan Pribadi</option>
+                </select>
+              </div>
+              <div class="row g-2 mb-2">
+                <div class="col-6"><label class="form-label small text-muted">Mulai</label><input type="date" id="input-leave-start" class="form-control rounded-3" value="2026-08-25"></div>
+                <div class="col-6"><label class="form-label small text-muted">Selesai</label><input type="date" id="input-leave-end" class="form-control rounded-3" value="2026-08-27"></div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label small text-muted">Alasan</label>
+                <textarea id="input-leave-reason" class="form-control rounded-3" rows="2" placeholder="Tuliskan alasan pengajuan..."></textarea>
+              </div>
+              <button onclick="submitLeaveRequest()" class="btn btn-primary w-100 rounded-3 fw-bold">Kirim Pengajuan</button>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="tab-sub-wfh">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+              <h6 class="fw-bold text-slate-800 mb-2">Form Permohonan WFH</h6>
+              <div class="mb-2">
+                <label class="form-label small text-muted">Tanggal WFH</label>
+                <input type="date" id="input-wfh-date" class="form-control rounded-3" value="2026-08-20">
+              </div>
+              <div class="mb-3">
+                <label class="form-label small text-muted">Agenda Pekerjaan</label>
+                <textarea id="input-wfh-reason" class="form-control rounded-3" rows="2" placeholder="Tuliskan deliverable yang dikerjakan saat WFH..."></textarea>
+              </div>
+              <button onclick="submitWfhRequest()" class="btn btn-warning w-100 rounded-3 fw-bold text-dark">Kirim Pengajuan WFH</button>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="tab-sub-history">
+            <div id="requests-history-container"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= TAB: MOBILE PROFILE & PAYSLIP ================= -->
+      <div id="tab-profile" class="mobile-tab-content d-none">
+        <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white text-center">
+          <img id="prof-user-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" width="70" height="70" class="rounded-circle border border-2 border-primary mx-auto mb-2 object-fit-cover shadow-sm" alt="Avatar">
+          <h5 class="fw-bold text-slate-900 mb-0" id="prof-user-name">Budi Santoso</h5>
+          <div class="text-primary small fw-semibold" id="prof-user-pos">Senior Fullstack Engineer</div>
+          <div class="text-muted small" id="prof-user-code">EMP-2024-001 &bull; Engineering & IT</div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
+          <h6 class="fw-bold text-slate-800 mb-2 border-bottom pb-2">Slip Gaji Digital (Confidential)</h6>
+          <div id="payslip-mobile-list"></div>
+        </div>
+      </div>
+
+      <!-- ================= TAB: MOBILE NOTIFICATIONS ================= -->
+      <div id="tab-notifications" class="mobile-tab-content d-none">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-slate-900 mb-0">Notifikasi</h5>
+          <button onclick="openMobileTab('tab-dashboard')" class="btn btn-light btn-sm rounded-pill px-3">Kembali</button>
+        </div>
+        <div id="notif-mobile-list"></div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="mobile-bottom-nav">
+      <div onclick="openMobileTab('tab-dashboard')" id="nav-dash" class="bottom-nav-item active">
+        <i class="bi bi-grid-fill"></i>
+        <span>Beranda</span>
+      </div>
+      <div onclick="openMobileTab('tab-attendance')" id="nav-att" class="bottom-nav-item">
+        <i class="bi bi-camera-fill"></i>
+        <span>Absensi</span>
+      </div>
+      <div onclick="openMobileTab('tab-tasks')" id="nav-task" class="bottom-nav-item">
+        <i class="bi bi-check2-square"></i>
+        <span>Tugas</span>
+      </div>
+      <div onclick="openMobileTab('tab-requests')" id="nav-req" class="bottom-nav-item">
+        <i class="bi bi-calendar2-range"></i>
+        <span>Pengajuan</span>
+      </div>
+      <div onclick="openMobileTab('tab-profile')" id="nav-prof" class="bottom-nav-item">
+        <i class="bi bi-person-fill"></i>
+        <span>Profil</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- 2. WEB ADMIN DASHBOARD VIEW CONTAINER                     -->
+  <!-- ========================================================= -->
+  <div id="view-admin-wrapper" class="admin-layout d-none">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="./icons/icon.svg" width="32" height="32" class="rounded" alt="Logo">
+        <div>
+          <div class="fw-bold text-white fs-6">Enterprise<span class="text-primary">Hub</span></div>
+          <div class="text-white-50" style="font-size: 10px;">ADMIN SUITE</div>
+        </div>
+      </div>
+
+      <div class="sidebar-nav">
+        <div class="nav-heading">Overview</div>
+        <a href="javascript:void(0)" onclick="openAdminMenu('admin-dash')" id="menu-admin-dash" class="nav-link active">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+
+        <div class="nav-heading">Human Resources</div>
+        <a href="javascript:void(0)" onclick="openAdminMenu('admin-emp')" id="menu-admin-emp" class="nav-link">
+          <i class="bi bi-people-fill"></i> Data Karyawan
+        </a>
+        <a href="javascript:void(0)" onclick="openAdminMenu('admin-att')" id="menu-admin-att" class="nav-link">
+          <i class="bi bi-calendar-check-fill"></i> Presensi & GPS Log
+        </a>
+        <a href="javascript:void(0)" onclick="openAdminMenu('admin-leaves')" id="menu-admin-leaves" class="nav-link">
+          <i class="bi bi-envelope-paper-fill"></i> Approval Cuti & WFH
+        </a>
+
+        <div class="nav-heading">Operations & Finance</div>
+        <a href="javascript:void(0)" onclick="openAdminMenu('admin-projects')" id="menu-admin-projects" class="nav-link">
+          <i class="bi bi-kanban-fill"></i> Project & Tasks
+        </a>
+        <a href="javascript:void(0)" onclick="openAdminMenu('admin-payroll')" id="menu-admin-payroll" class="nav-link">
+          <i class="bi bi-cash-stack"></i> Payroll & Gaji
+        </a>
+        <a href="javascript:void(0)" onclick="openAdminMenu('admin-assets')" id="menu-admin-assets" class="nav-link">
+          <i class="bi bi-laptop"></i> Aset & Inventaris
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="d-flex align-items-center gap-3">
+          <h5 class="mb-0 fw-bold text-slate-800" id="admin-page-title">Executive Dashboard</h5>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button onclick="setView('mobile')" class="btn btn-outline-primary btn-sm rounded-pill">
+            <i class="bi bi-phone me-1"></i> Buka Tampilan Mobile PWA
+          </button>
+        </div>
+      </header>
+
+      <main class="admin-body">
+        
+        <!-- SECTION: DASHBOARD -->
+        <div id="admin-sec-dash" class="admin-section">
+          <div class="row g-3 mb-4">
+            <div class="col-md-3">
+              <div class="kpi-card d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="text-muted small fw-semibold">TOTAL KARYAWAN</div>
+                  <div class="fs-3 fw-bold text-dark mt-1">45 Orang</div>
+                  <span class="badge bg-primary-subtle text-primary">5 Departemen</span>
+                </div>
+                <div class="kpi-icon bg-primary-subtle text-primary"><i class="bi bi-people-fill"></i></div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="kpi-card d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="text-muted small fw-semibold">KEHADIRAN HARI INI</div>
+                  <div class="fs-3 fw-bold text-success mt-1">97.8%</div>
+                  <span class="text-muted small">Realtime GPS Valid</span>
+                </div>
+                <div class="kpi-icon bg-success-subtle text-success"><i class="bi bi-calendar-check-fill"></i></div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="kpi-card d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="text-muted small fw-semibold">PENDING APPROVAL</div>
+                  <div class="fs-3 fw-bold text-warning mt-1" id="kpi-pending-count">2 Pengajuan</div>
+                  <span class="text-muted small">Cuti & WFH</span>
+                </div>
+                <div class="kpi-icon bg-warning-subtle text-warning"><i class="bi bi-envelope-fill"></i></div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="kpi-card d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="text-muted small fw-semibold">TOTAL ASET</div>
+                  <div class="fs-4 fw-bold text-dark mt-1">Rp 587 Juta</div>
+                  <span class="text-muted small">Inventaris Terdata</span>
+                </div>
+                <div class="kpi-icon bg-info-subtle text-info"><i class="bi bi-laptop"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <h6 class="fw-bold text-slate-900 mb-3">Tren Kehadiran Karyawan (7 Hari Terakhir)</h6>
+            <div style="height: 220px;">
+              <canvas id="ghChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: EMPLOYEES -->
+        <div id="admin-sec-emp" class="admin-section d-none">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h6 class="fw-bold text-slate-900 mb-3">Data Personalia & Karyawan</h6>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                  <tr><th>NIK</th><th>Nama Lengkap</th><th>Departemen</th><th>Jabatan</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>EMP-2024-001</td><td><strong>Budi Santoso</strong></td><td>Engineering</td><td>Senior Fullstack Engineer</td><td><span class="badge bg-success">Active</span></td></tr>
+                  <tr><td>EMP-2024-002</td><td><strong>Siti Rahmawati</strong></td><td>Engineering</td><td>Lead UI/UX Designer</td><td><span class="badge bg-success">Active</span></td></tr>
+                  <tr><td>EMP-2024-003</td><td><strong>Reza Kurniawan</strong></td><td>Marketing</td><td>Growth Marketing Specialist</td><td><span class="badge bg-success">Active</span></td></tr>
+                  <tr><td>EMP-2024-HR1</td><td><strong>Sarah Wijaya</strong></td><td>Human Resources</td><td>HR Manager</td><td><span class="badge bg-success">Active</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: ATTENDANCE -->
+        <div id="admin-sec-att" class="admin-section d-none">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h6 class="fw-bold text-slate-900 mb-3">Log Presensi GPS & Kamera Hari Ini</h6>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                  <tr><th>Karyawan</th><th>Check-In</th><th>Check-Out</th><th>Status</th><th>Foto Selfie</th><th>GPS Maps</th></tr>
+                </thead>
+                <tbody id="admin-attendance-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: LEAVES APPROVAL -->
+        <div id="admin-sec-leaves" class="admin-section d-none">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h6 class="fw-bold text-slate-900 mb-3">Persetujuan Cuti & WFH</h6>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                  <tr><th>Karyawan</th><th>Jenis</th><th>Tanggal</th><th>Alasan</th><th>Status</th><th>Aksi</th></tr>
+                </thead>
+                <tbody id="admin-leaves-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: PROJECTS -->
+        <div id="admin-sec-projects" class="admin-section d-none">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h6 class="fw-bold text-slate-900 mb-3">Manajemen Proyek & Tugas</h6>
+            <div id="admin-projects-list"></div>
+          </div>
+        </div>
+
+        <!-- SECTION: PAYROLL -->
+        <div id="admin-sec-payroll" class="admin-section d-none">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="fw-bold text-slate-900 mb-0">Payroll & Penggajian Karyawan</h6>
+              <button onclick="generateDemoPayroll()" class="btn btn-primary btn-sm rounded-pill px-3">Generate Slip Gaji</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                  <tr><th>No Slip</th><th>Karyawan</th><th>Gaji Pokok</th><th>Tunjangan</th><th>Gaji Bersih</th><th>Status</th></tr>
+                </thead>
+                <tbody id="admin-payroll-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: ASSETS -->
+        <div id="admin-sec-assets" class="admin-section d-none">
+          <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h6 class="fw-bold text-slate-900 mb-3">Aset & Inventaris Perusahaan</h6>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                  <tr><th>Kode Aset</th><th>Nama Perangkat</th><th>Kategori</th><th>Harga</th><th>Pemegang</th><th>Kondisi</th></tr>
+                </thead>
+                <tbody id="admin-assets-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal Slip Gaji Detail -->
+  <div class="modal fade" id="modalPayslipDetail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-body p-4" id="payslip-modal-body"></div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i> Cetak Slip
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="./js/pwa-engine.js"></script>
+  
+  <script>
+  // UI Renderer Functions
+  document.addEventListener('DOMContentLoaded', () => {
+    renderMobileDashboard();
+    renderChart();
+    detectPwaGPS();
+  });
+
+  function openMobileTab(tabId) {
+    document.querySelectorAll('.mobile-tab-content').forEach(el => el.classList.add('d-none'));
+    document.querySelectorAll('.bottom-nav-item').forEach(el => el.classList.remove('active'));
+    
+    const target = document.getElementById(tabId);
+    if (target) target.classList.remove('d-none');
+
+    if (tabId === 'tab-dashboard') {
+      document.getElementById('nav-dash').classList.add('active');
+      renderMobileDashboard();
+    } else if (tabId === 'tab-attendance') {
+      document.getElementById('nav-att').classList.add('active');
+      initPwaCamera();
+    } else if (tabId === 'tab-tasks') {
+      document.getElementById('nav-task').classList.add('active');
+      renderTasksList();
+    } else if (tabId === 'tab-requests') {
+      document.getElementById('nav-req').classList.add('active');
+      renderRequestsList();
+    } else if (tabId === 'tab-profile') {
+      document.getElementById('nav-prof').classList.add('active');
+      renderProfileList();
+    } else if (tabId === 'tab-notifications') {
+      renderNotifList();
+    }
+  }
+
+  function renderMobileDashboard() {
+    document.getElementById('dash-user-name').textContent = store.currentUser.name;
+    document.getElementById('dash-user-position').innerHTML = `${store.currentUser.position} &bull; <span class="badge bg-light text-dark">ENG</span>`;
+    document.getElementById('mobile-user-avatar').src = store.currentUser.avatar;
+
+    const todayAtt = store.attendances.find(a => a.date === new Date().toISOString().split('T')[0]);
+    if (todayAtt && todayAtt.checkIn) {
+      document.getElementById('dash-checkin-time').textContent = todayAtt.checkIn + ' WIB';
+      document.getElementById('badge-work-status').textContent = todayAtt.checkOut ? 'Selesai Kerja' : 'Sedang Bekerja';
+      document.getElementById('badge-work-status').className = todayAtt.checkOut ? 'badge bg-secondary px-2 py-1 rounded-pill' : 'badge bg-success px-2 py-1 rounded-pill';
+      document.getElementById('dash-checkout-time').textContent = todayAtt.checkOut ? todayAtt.checkOut + ' WIB' : '--:--';
+    }
+
+    // Active Tasks
+    const activeTasks = store.tasks.filter(t => t.status !== 'completed');
+    let html = '';
+    activeTasks.slice(0, 3).forEach(t => {
+      html += `
+        <div class="card border-0 shadow-sm rounded-3 p-3 mb-2 bg-white">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <span class="badge ${t.priority === 'urgent' ? 'bg-danger' : 'bg-warning text-dark'} rounded-pill" style="font-size: 10px;">${t.priority.toUpperCase()}</span>
+            <span class="text-muted small" style="font-size: 11px;">Deadline: ${t.deadline}</span>
+          </div>
+          <div class="fw-bold text-dark small mb-1">${t.title}</div>
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="progress flex-grow-1 me-2" style="height: 6px;">
+              <div class="progress-bar bg-primary" style="width: ${t.progress}%;"></div>
+            </div>
+            <span class="fw-bold text-primary small">${t.progress}%</span>
+          </div>
+        </div>
+      `;
+    });
+    document.getElementById('dash-active-tasks-list').innerHTML = html;
+  }
+
+  // Camera WebRTC
+  async function initPwaCamera() {
+    const video = document.getElementById('pwa-camera-video');
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        activeMediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        video.srcObject = activeMediaStream;
+      }
+    } catch(e) {
+      console.warn('Camera access:', e);
+    }
+  }
+
+  function snapPwaSelfie() {
+    const video = document.getElementById('pwa-camera-video');
+    const canvas = document.getElementById('pwa-camera-canvas');
+    const preview = document.getElementById('pwa-selfie-preview');
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = 400;
+    canvas.height = 400;
+    ctx.drawImage(video, 0, 0, 400, 400);
+
+    const b64 = canvas.toDataURL('image/jpeg');
+    preview.src = b64;
+    preview.classList.remove('d-none');
+    video.classList.add('d-none');
+
+    document.getElementById('btn-pwa-snap').classList.add('d-none');
+    document.getElementById('btn-pwa-retake').classList.remove('d-none');
+    document.getElementById('pwa-scanline').classList.add('d-none');
+  }
+
+  function resetPwaSelfie() {
+    document.getElementById('pwa-selfie-preview').classList.add('d-none');
+    document.getElementById('pwa-camera-video').classList.remove('d-none');
+    document.getElementById('btn-pwa-snap').classList.remove('d-none');
+    document.getElementById('btn-pwa-retake').classList.add('d-none');
+    document.getElementById('pwa-scanline').classList.remove('d-none');
+  }
+
+  // GPS
+  function detectPwaGPS() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        document.getElementById('pwa-gps-text').innerHTML = `<span class="text-success"><i class="bi bi-geo-alt-fill"></i> Terkunci: ${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}</span>`;
+      }, () => {
+        document.getElementById('pwa-gps-text').innerHTML = `<span class="text-muted"><i class="bi bi-geo-alt"></i> Lokasi GPS Jakarta HQ (-6.225588, 106.808560)</span>`;
+      });
+    }
+  }
+
+  function doCheckIn() {
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const todayStr = now.toISOString().split('T')[0];
+
+    let att = store.attendances.find(a => a.date === todayStr);
+    if (!att) {
+      att = { date: todayStr, checkIn: timeStr, checkOut: null, status: 'present', photo: null, lat: -6.225588, lng: 106.808560, duration: 0, empName: store.currentUser.name, empCode: store.currentUser.emp_code };
+      store.attendances.unshift(att);
+    } else {
+      att.checkIn = timeStr;
+    }
+    saveStore(store);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Check-In Berhasil!',
+      text: `Presensi masuk tercatat pada ${timeStr} WIB.`,
+      confirmButtonColor: '#2563eb'
+    }).then(() => openMobileTab('tab-dashboard'));
+  }
+
+  function doCheckOut() {
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const todayStr = now.toISOString().split('T')[0];
+
+    let att = store.attendances.find(a => a.date === todayStr);
+    if (att) {
+      att.checkOut = timeStr;
+      att.duration = 480; // 8 hours
+      saveStore(store);
+    }
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Check-Out Berhasil!',
+      text: `Presensi pulang tercatat pada ${timeStr} WIB. Durasi kerja: 8 jam.`,
+      confirmButtonColor: '#2563eb'
+    }).then(() => openMobileTab('tab-dashboard'));
+  }
+
+  // Tasks Render
+  function renderTasksList() {
+    let html = '';
+    store.tasks.forEach(t => {
+      html += `
+        <div class="card border-0 shadow-sm rounded-4 p-3 mb-3 bg-white">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="badge ${t.priority === 'urgent' ? 'bg-danger' : 'bg-warning text-dark'} rounded-pill">${t.priority.toUpperCase()}</span>
+            <span class="badge ${t.status === 'completed' ? 'bg-success' : 'bg-primary'} rounded-pill">${t.status.toUpperCase()}</span>
+          </div>
+          <h6 class="fw-bold text-dark mb-1">${t.title}</h6>
+          <p class="text-muted small mb-2">${t.desc}</p>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted small"><i class="bi bi-clock me-1"></i> ${t.deadline}</span>
+            <span class="fw-bold text-primary small">${t.progress}%</span>
+          </div>
+          <div class="progress mb-3" style="height: 8px;">
+            <div class="progress-bar bg-primary" style="width: ${t.progress}%;"></div>
+          </div>
+          <div class="d-flex gap-2">
+            <button onclick="updateTaskPrompt(${t.id})" class="btn btn-outline-primary btn-sm flex-fill rounded-pill">Update Progress</button>
+            <button onclick="markTaskDone(${t.id})" class="btn btn-success btn-sm rounded-pill px-3">Selesai</button>
+          </div>
+        </div>
+      `;
+    });
+    document.getElementById('tasks-container-list').innerHTML = html;
+  }
+
+  function updateTaskPrompt(id) {
+    Swal.fire({
+      title: 'Update Progress (%)',
+      input: 'range',
+      inputAttributes: { min: 0, max: 100, step: 5 },
+      inputValue: 50
+    }).then((res) => {
+      if (res.isConfirmed) {
+        const task = store.tasks.find(t => t.id === id);
+        if (task) {
+          task.progress = parseInt(res.value);
+          if (task.progress === 100) task.status = 'completed';
+          saveStore(store);
+          renderTasksList();
+        }
+      }
+    });
+  }
+
+  function markTaskDone(id) {
+    const task = store.tasks.find(t => t.id === id);
+    if (task) {
+      task.progress = 100;
+      task.status = 'completed';
+      saveStore(store);
+      renderTasksList();
+    }
+  }
+
+  // Requests
+  function submitLeaveRequest() {
+    const type = document.getElementById('input-leave-type').value;
+    const start = document.getElementById('input-leave-start').value;
+    const end = document.getElementById('input-leave-end').value;
+    const reason = document.getElementById('input-leave-reason').value;
+
+    store.leaves.unshift({
+      id: Date.now(),
+      empName: store.currentUser.name,
+      type: type,
+      start: start,
+      end: end,
+      reason: reason || 'Pengajuan cuti tahunan/izin',
+      status: 'pending',
+      reviewerNote: ''
+    });
+    saveStore(store);
+
+    Swal.fire({ icon: 'success', title: 'Terkirim', text: 'Pengajuan cuti sedang menunggu persetujuan HR/Manager.' });
+    openMobileTab('tab-requests');
+  }
+
+  function submitWfhRequest() {
+    const date = document.getElementById('input-wfh-date').value;
+    const reason = document.getElementById('input-wfh-reason').value;
+
+    store.wfh.unshift({
+      id: Date.now(),
+      empName: store.currentUser.name,
+      date: date,
+      reason: reason || 'Pengerjaan agenda sprint dari rumah',
+      status: 'pending',
+      reviewerNote: ''
+    });
+    saveStore(store);
+
+    Swal.fire({ icon: 'success', title: 'Terkirim', text: 'Pengajuan WFH sedang menunggu persetujuan.' });
+    openMobileTab('tab-requests');
+  }
+
+  function renderRequestsList() {
+    let html = '<h6 class="fw-bold mb-2">Riwayat Pengajuan Cuti & WFH</h6>';
+    store.leaves.forEach(l => {
+      html += `
+        <div class="p-3 border rounded-3 mb-2 bg-white small">
+          <div class="d-flex justify-content-between mb-1">
+            <strong>Cuti: ${l.start} s/d ${l.end}</strong>
+            <span class="badge ${l.status === 'approved' ? 'bg-success' : 'bg-warning text-dark'} rounded-pill">${l.status.toUpperCase()}</span>
+          </div>
+          <div class="text-muted">${l.reason}</div>
+        </div>
+      `;
+    });
+    document.getElementById('requests-history-container').innerHTML = html;
+  }
+
+  // Profile & Payslip
+  function renderProfileList() {
+    document.getElementById('prof-user-name').textContent = store.currentUser.name;
+    document.getElementById('prof-user-pos').textContent = store.currentUser.position;
+    document.getElementById('prof-user-code').textContent = `${store.currentUser.emp_code} • ${store.currentUser.department}`;
+    document.getElementById('prof-user-avatar').src = store.currentUser.avatar;
+
+    let html = '';
+    store.payroll.forEach(p => {
+      html += `
+        <div class="p-3 border rounded-3 mb-2 bg-light d-flex justify-content-between align-items-center cursor-pointer" onclick="showPayslipDetail(${p.id})">
+          <div>
+            <div class="fw-bold text-dark small">Periode ${p.month}/${p.year}</div>
+            <div class="text-muted" style="font-size: 11px;">${p.slipNumber}</div>
+            <div class="fw-bold text-primary small">Rp ${p.net.toLocaleString('id-ID')}</div>
+          </div>
+          <span class="badge bg-success rounded-pill">PAID</span>
+        </div>
+      `;
+    });
+    document.getElementById('payslip-mobile-list').innerHTML = html;
+  }
+
+  function showPayslipDetail(id) {
+    const p = store.payroll.find(x => x.id === id);
+    if (!p) return;
+
+    document.getElementById('payslip-modal-body').innerHTML = `
+      <div class="text-center pb-3 border-bottom mb-3">
+        <h6 class="fw-bold mb-0">PT ENTERPRISE DIGITAL INDONESIA</h6>
+        <div class="text-muted small">SLIP GAJI KARYAWAN (CONFIDENTIAL)</div>
+        <span class="badge bg-light text-dark border mt-1">${p.slipNumber}</span>
+      </div>
+      <div class="small mb-3">
+        <div>Nama: <strong>${p.empName}</strong> (${p.empCode})</div>
+        <div>Periode: <strong>${p.month}/${p.year}</strong></div>
+      </div>
+      <div class="bg-light p-3 rounded-3 small mb-2">
+        <div class="d-flex justify-content-between py-1"><span>Gaji Pokok</span><strong>Rp ${p.basic.toLocaleString('id-ID')}</strong></div>
+        <div class="d-flex justify-content-between py-1"><span>Tunjangan</span><strong>Rp ${p.allowance.toLocaleString('id-ID')}</strong></div>
+        <div class="d-flex justify-content-between py-1"><span>Uang Lembur</span><strong>Rp ${p.overtime.toLocaleString('id-ID')}</strong></div>
+        <div class="d-flex justify-content-between py-1 text-danger"><span>Potongan BPJS/Tax</span><strong>- Rp ${p.deductions.toLocaleString('id-ID')}</strong></div>
+      </div>
+      <div class="p-3 bg-primary text-white text-center rounded-3">
+        <div class="small text-white-50">TAKE HOME PAY</div>
+        <div class="fs-4 fw-bold">Rp ${p.net.toLocaleString('id-ID')}</div>
+      </div>
+    `;
+    new bootstrap.Modal(document.getElementById('modalPayslipDetail')).show();
+  }
+
+  // Notif Render
+  function renderNotifList() {
+    let html = '<div class="card border-0 shadow-sm rounded-4 p-3 bg-white">';
+    store.notifications.forEach(n => {
+      html += `
+        <div class="p-3 border-bottom small">
+          <div class="fw-bold text-dark">${n.title}</div>
+          <div class="text-muted">${n.msg}</div>
+          <div class="text-muted" style="font-size: 10px;">${n.time}</div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    document.getElementById('notif-mobile-list').innerHTML = html;
+  }
+
+  // Web Admin Menus
+  function openAdminMenu(menuKey) {
+    document.querySelectorAll('.admin-sidebar .nav-link').forEach(el => el.classList.remove('active'));
+    document.getElementById('menu-' + menuKey).classList.add('active');
+
+    document.querySelectorAll('.admin-section').forEach(el => el.classList.add('d-none'));
+    
+    if (menuKey === 'admin-dash') {
+      document.getElementById('admin-sec-dash').classList.remove('d-none');
+      document.getElementById('admin-page-title').textContent = 'Executive Overview Dashboard';
+    } else if (menuKey === 'admin-emp') {
+      document.getElementById('admin-sec-emp').classList.remove('d-none');
+      document.getElementById('admin-page-title').textContent = 'Data Karyawan & Personalia';
+    } else if (menuKey === 'admin-att') {
+      document.getElementById('admin-sec-att').classList.remove('d-none');
+      document.getElementById('admin-page-title').textContent = 'Presensi & GPS Log Monitoring';
+      renderAdminAttendanceTable();
+    } else if (menuKey === 'admin-leaves') {
+      document.getElementById('admin-sec-leaves').classList.remove('d-none');
+      document.getElementById('admin-page-title').textContent = 'Approval Cuti & WFH';
+      renderAdminLeavesTable();
+    } else if (menuKey === 'admin-projects') {
+      document.getElementById('admin-sec-projects').classList.remove('d-none');
+      document.getElementById('admin-page-title').textContent = 'Manajemen Proyek & Penugasan Tim';
+      renderAdminProjects();
+    } else if (menuKey === 'admin-payroll') {
+      document.getElementById('admin-sec-payroll').classList.remove('d-none');
+      document.getElementById('admin-page-title').textContent = 'Payroll & Penggajian';
+      renderAdminPayrollTable();
+    } else if (menuKey === 'admin-assets') {
+      document.getElementById('admin-sec-assets').classList.remove('d-none');
+      document.getElementById('admin-page-title').textContent = 'Aset & Inventaris Perusahaan';
+      renderAdminAssetsTable();
+    }
+  }
+
+  function renderAdminDashboard() {
+    renderChart();
+    document.getElementById('kpi-pending-count').textContent = (store.leaves.filter(l => l.status === 'pending').length + store.wfh.filter(w => w.status === 'pending').length) + ' Pengajuan';
+  }
+
+  function renderAdminAttendanceTable() {
+    let html = '';
+    store.attendances.forEach(a => {
+      html += `
+        <tr>
+          <td><strong>${a.empName}</strong> (${a.empCode})</td>
+          <td class="text-success fw-bold">${a.checkIn ? a.checkIn + ' WIB' : '-'}</td>
+          <td class="text-danger fw-bold">${a.checkOut ? a.checkOut + ' WIB' : '-'}</td>
+          <td><span class="badge bg-success">PRESENT</span></td>
+          <td><span class="badge bg-light text-dark border">Selfie GPS Valid</span></td>
+          <td><a href="https://maps.google.com/?q=${a.lat},${a.lng}" target="_blank" class="btn btn-sm btn-light border py-0"><i class="bi bi-geo-alt-fill text-danger"></i> Maps</a></td>
+        </tr>
+      `;
+    });
+    document.getElementById('admin-attendance-tbody').innerHTML = html;
+  }
+
+  function renderAdminLeavesTable() {
+    let html = '';
+    store.leaves.forEach(l => {
+      html += `
+        <tr>
+          <td><strong>${l.empName}</strong></td>
+          <td><span class="badge bg-primary-subtle text-primary">${l.type.toUpperCase()}</span></td>
+          <td>${l.start} s/d ${l.end}</td>
+          <td>${l.reason}</td>
+          <td><span class="badge ${l.status === 'approved' ? 'bg-success' : 'bg-warning text-dark'}">${l.status.toUpperCase()}</span></td>
+          <td>
+            ${l.status === 'pending' ? `
+              <button onclick="approveLeave(${l.id})" class="btn btn-sm btn-success rounded-pill py-0 px-2">Setujui</button>
+              <button onclick="rejectLeave(${l.id})" class="btn btn-sm btn-danger rounded-pill py-0 px-2">Tolak</button>
+            ` : '<span class="text-muted">Diproses</span>'}
+          </td>
+        </tr>
+      `;
+    });
+    document.getElementById('admin-leaves-tbody').innerHTML = html;
+  }
+
+  function approveLeave(id) {
+    const l = store.leaves.find(x => x.id === id);
+    if (l) {
+      l.status = 'approved';
+      saveStore(store);
+      renderAdminLeavesTable();
+      Swal.fire({ icon: 'success', title: 'Disetujui', text: 'Pengajuan cuti telah disetujui.' });
+    }
+  }
+
+  function rejectLeave(id) {
+    const l = store.leaves.find(x => x.id === id);
+    if (l) {
+      l.status = 'rejected';
+      saveStore(store);
+      renderAdminLeavesTable();
+      Swal.fire({ icon: 'info', title: 'Ditolak', text: 'Pengajuan cuti telah ditolak.' });
+    }
+  }
+
+  function renderAdminProjects() {
+    let html = '<div class="row g-3">';
+    store.projects.forEach(p => {
+      html += `
+        <div class="col-md-6">
+          <div class="card border rounded-4 p-3 bg-light">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="badge bg-primary">${p.code}</span>
+              <span class="fw-bold text-success">Rp ${p.budget.toLocaleString('id-ID')}</span>
+            </div>
+            <h6 class="fw-bold text-dark mb-1">${p.name}</h6>
+            <div class="text-muted small mb-2">PM: ${p.pm} • Client: ${p.client}</div>
+            <div class="text-muted small">Periode: ${p.start} s/d ${p.end}</div>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    document.getElementById('admin-projects-list').innerHTML = html;
+  }
+
+  function renderAdminPayrollTable() {
+    let html = '';
+    store.payroll.forEach(p => {
+      html += `
+        <tr>
+          <td><span class="badge bg-light text-dark border">${p.slipNumber}</span></td>
+          <td><strong>${p.empName}</strong> (${p.empCode})</td>
+          <td>Rp ${p.basic.toLocaleString('id-ID')}</td>
+          <td>Rp ${p.allowance.toLocaleString('id-ID')}</td>
+          <td class="fw-bold text-primary">Rp ${p.net.toLocaleString('id-ID')}</td>
+          <td><span class="badge bg-success">PAID</span></td>
+        </tr>
+      `;
+    });
+    document.getElementById('admin-payroll-tbody').innerHTML = html;
+  }
+
+  function generateDemoPayroll() {
+    Swal.fire({ icon: 'success', title: 'Payroll Dibuat', text: 'Draft penggajian periode ini berhasil digenerate!' });
+  }
+
+  function renderAdminAssetsTable() {
+    let html = '';
+    store.assets.forEach(a => {
+      html += `
+        <tr>
+          <td><span class="badge bg-light text-dark border">${a.code}</span></td>
+          <td><strong>${a.name}</strong></td>
+          <td>${a.cat}</td>
+          <td>Rp ${a.price.toLocaleString('id-ID')}</td>
+          <td>${a.holder}</td>
+          <td><span class="badge bg-success">GOOD</span></td>
+        </tr>
+      `;
+    });
+    document.getElementById('admin-assets-tbody').innerHTML = html;
+  }
+
+  // Chart.js
+  let chartInstance = null;
+  function renderChart() {
+    const canvas = document.getElementById('ghChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (chartInstance) chartInstance.destroy();
+    
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['11 Agu', '12 Agu', '13 Agu', '14 Agu', '15 Agu', '16 Agu', '17 Agu'],
+        datasets: [{
+          label: 'Kehadiran Karyawan (Orang)',
+          data: [42, 44, 43, 45, 44, 45, 44],
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37, 99, 235, 0.1)',
+          tension: 0.35,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+  }
+  </script>
+</body>
+</html>

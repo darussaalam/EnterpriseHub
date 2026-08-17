@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: enterprise-hub-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    branch: main
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: sqlite
